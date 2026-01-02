@@ -171,15 +171,30 @@
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         <option value="">Select your organization...</option>
                     </select>
+                    <p class="text-xs text-gray-500 mt-1">Your business unit, department, or team</p>
                 </div>
 
-                <!-- Strategic Theme (Optional) -->
+                <!-- Org-Specific Focus Areas (Read-Only Display) -->
+                <div id="org-themes-container" class="hidden">
+                    <label for="org-themes-display" class="block text-sm font-semibold text-gray-700 mb-2">Your
+                        Organization's Strategic Focus Areas</label>
+                    <textarea id="org-themes-display" rows="8" readonly
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 font-mono text-sm resize-y cursor-default">
+                    </textarea>
+                    <p class="text-xs text-gray-500 mt-1">📋 These strategic priorities are automatically included in
+                        your goal context</p>
+                </div>
+
+                <!-- Your Focus Areas (Optional - User Customization) -->
                 <div>
-                    <label for="theme" class="block text-sm font-semibold text-gray-700 mb-2">Strategic Theme <span
+                    <label for="theme" class="block text-sm font-semibold text-gray-700 mb-2">Your Focus Areas <span
                             class="text-gray-400 font-normal">(optional)</span></label>
-                    <input type="text" id="theme" placeholder="e.g., 'Increase Productivity' or 'Cloud Migration'"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                    <p class="text-xs text-gray-500 mt-1">A theme to bias goal generation (optional)</p>
+                    <textarea id="theme" rows="4"
+                        placeholder="Add any additional focus areas or emphasis here...&#10;&#10;Examples:&#10;- Focus on cloud migration specifically&#10;- Emphasize mentoring and team development&#10;- Technical leadership and architecture&#10;- Process improvement and automation"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-sans resize-y">
+                    </textarea>
+                    <p class="text-xs text-gray-500 mt-1">💡 Optional: Add specific areas you want to emphasize or
+                        challenges you're focusing on</p>
                 </div>
 
                 <!-- Goal Style -->
@@ -227,12 +242,18 @@
 
             <!-- Results Container (shown after loading) -->
             <div id="results-container" class="hidden space-y-6">
-                <!-- System Prompt Section -->
+                <!-- Combined Copy Button (PRIMARY ACTION - at top) -->
+                <button type="button" onclick="copyPrompt('both')"
+                    class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-4 px-6 rounded-lg transition shadow-lg text-lg">
+                    📋 Copy Both Prompts (Recommended)
+                </button>
+
+                <!-- Goal Framework Section -->
                 <div class="bg-white rounded-lg shadow-md overflow-hidden">
                     <button type="button"
                         class="collapsible-btn w-full px-6 py-4 bg-blue-50 hover:bg-blue-100 border-b border-gray-200 text-left font-semibold text-gray-900 flex justify-between items-center transition"
                         onclick="toggleCollapsible(this)">
-                        <span>System Prompt</span>
+                        <span>Goal Framework</span>
                     </button>
                     <div class="hidden p-6 max-h-64 overflow-y-auto">
                         <div id="system-prompt-content"
@@ -240,17 +261,17 @@
                         </div>
                         <button type="button" onclick="copyPrompt('system')"
                             class="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded transition">
-                            Copy System Prompt
+                            Copy Goal Framework
                         </button>
                     </div>
                 </div>
 
-                <!-- User Context Section -->
+                <!-- Your Customization Section -->
                 <div class="bg-white rounded-lg shadow-md overflow-hidden">
                     <button type="button"
                         class="collapsible-btn w-full px-6 py-4 bg-green-50 hover:bg-green-100 border-b border-gray-200 text-left font-semibold text-gray-900 flex justify-between items-center transition"
                         onclick="toggleCollapsible(this)">
-                        <span>User Context</span>
+                        <span>Your Customization</span>
                     </button>
                     <div class="hidden p-6 max-h-64 overflow-y-auto">
                         <div id="user-context-content"
@@ -258,16 +279,10 @@
                         </div>
                         <button type="button" onclick="copyPrompt('user')"
                             class="mt-4 w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded transition">
-                            Copy User Context
+                            Copy Your Customization
                         </button>
                     </div>
                 </div>
-
-                <!-- Combined Copy Button -->
-                <button type="button" onclick="copyPrompt('both')"
-                    class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg transition">
-                    Copy Both Prompts
-                </button>
 
                 <!-- Start Over Button -->
                 <button type="button" onclick="startOver()"

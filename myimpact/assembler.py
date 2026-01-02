@@ -144,27 +144,14 @@ def assemble_prompt(
         [f"- **{attr}**: {expectation}" for attr, expectation in culture.items()]
     )
 
-    # Load org themes
+    # Load full org themes content (all strategic focus areas)
     try:
-        themes_content = load_org_themes(org_name)
+        org_themes_full = load_org_themes(org_name)
     except FileNotFoundError:
-        themes_content = ""
+        org_themes_full = ""
 
-    # Extract theme section if specified
-    theme_section = ""
-    if theme and themes_content:
-        lines = themes_content.split("\n")
-        in_theme = False
-        theme_lines = []
-        for line in lines:
-            if theme.lower() in line.lower():
-                in_theme = True
-            elif line.startswith("##") and in_theme:
-                break
-            if in_theme:
-                theme_lines.append(line)
-        if theme_lines:
-            theme_section = "\n".join(theme_lines).strip()
+    # User-specified focus (optional emphasis on top of full org context)
+    user_focus = theme.strip() if theme else ""
 
     # Load system prompt
     system_prompt = load_system_prompt()
@@ -192,10 +179,19 @@ def assemble_prompt(
 {goal_style_guidance}
 """
 
-    if theme_section:
+    # Always include full organizational context
+    if org_themes_full:
         user_context += f"""
-### Strategic Theme
-{theme_section}
+### Organizational Strategic Focus Areas
+{org_themes_full}
+"""
+
+    # Add user-specified focus if provided
+    if user_focus:
+        user_context += f"""
+### User-Specified Focus
+The user wants to emphasize the following areas or themes:
+{user_focus}
 """
 
     user_context += """

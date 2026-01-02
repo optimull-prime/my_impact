@@ -49,6 +49,23 @@ async function generateGoals(payload) {
 }
 
 /**
+ * Fetch full org themes content
+ */
+async function fetchOrgThemes(orgName) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/orgs/${orgName}/themes`);
+        if (!response.ok) {
+            throw new Error(`API error: ${response.status}`);
+        }
+        const data = await response.json();
+        return data.content;
+    } catch (error) {
+        console.error('Failed to fetch org themes:', error);
+        return null;
+    }
+}
+
+/**
  * Check API health
  */
 async function checkHealth() {

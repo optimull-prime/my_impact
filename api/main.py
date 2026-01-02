@@ -17,6 +17,7 @@ from myimpact.assembler import (
     discover_scales,
     discover_levels,
     discover_orgs,
+    load_org_themes,
 )
 
 # Azure OpenAI (optional)
@@ -73,6 +74,7 @@ class GenerateRequest(BaseModel):
 
 @app.get("/api/metadata")
 def get_metadata():
+    """Get metadata for dropdowns and form options."""
     return {
         "scales": discover_scales(),
         "levels": {s: discover_levels(s) for s in discover_scales()},
@@ -80,6 +82,16 @@ def get_metadata():
         "goal_styles": ["independent", "progressive"],
         "organizations": discover_orgs(),
     }
+
+
+@app.get("/api/orgs/{org_name}/themes")
+def get_org_themes(org_name: str):
+    """Get full org themes content for display."""
+    try:
+        themes_content = load_org_themes(org_name)
+        return {"org": org_name, "content": themes_content}
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail=f"Org themes not found for '{org_name}'")
 
 
 @app.get("/api/health")

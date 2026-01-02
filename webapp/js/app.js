@@ -18,6 +18,7 @@ async function initializeApp() {
 
         // Setup event listeners
         document.getElementById('scale').addEventListener('change', onScaleChange);
+        document.getElementById('org').addEventListener('change', onOrgChange);
         document.getElementById('prompt-form').addEventListener('submit', onFormSubmit);
 
         console.log('MyImpact app initialized successfully');
@@ -86,6 +87,41 @@ function populateOrgDropdown() {
 }
 
 /**
+ * Handle organization change - display full org themes
+ */
+function onOrgChange() {
+    const orgSelect = document.getElementById('org');
+    const selectedOrg = orgSelect.value;
+
+    const orgThemesContainer = document.getElementById('org-themes-container');
+    const orgThemesDisplay = document.getElementById('org-themes-display');
+
+    console.log('Organization changed to:', selectedOrg);
+
+    if (!selectedOrg || !cachedMetadata) {
+        orgThemesContainer.classList.add('hidden');
+        orgThemesDisplay.value = '';
+        return;
+    }
+
+    // Fetch and display full org themes content
+    console.log('Fetching org themes for:', selectedOrg);
+    fetchOrgThemes(selectedOrg).then(content => {
+        console.log('Org themes received:', content ? 'YES' : 'NO');
+        if (content) {
+            orgThemesDisplay.value = content;
+            orgThemesContainer.classList.remove('hidden');
+        } else {
+            orgThemesContainer.classList.add('hidden');
+            orgThemesDisplay.value = '';
+        }
+    }).catch(error => {
+        console.error('Error fetching org themes:', error);
+        orgThemesContainer.classList.add('hidden');
+    });
+}
+
+/**
  * Handle form submission
  */
 async function onFormSubmit(event) {
@@ -97,7 +133,7 @@ async function onFormSubmit(event) {
         level: document.getElementById('level').value,
         growth_intensity: document.querySelector('input[name="growth_intensity"]:checked').value,
         org: document.getElementById('org').value,
-        theme: document.getElementById('theme').value || null,
+        theme: document.getElementById('theme').value.trim() || null,
         goal_style: document.querySelector('input[name="goal_style"]:checked').value,
     };
 
@@ -179,12 +215,12 @@ async function copyPrompt(type) {
 
     if (type === 'system') {
         textToCopy = window.currentPrompts.system;
-        label = 'System Prompt';
+        label = 'Goal Framework';
     } else if (type === 'user') {
         textToCopy = window.currentPrompts.user;
-        label = 'User Context';
+        label = 'Your Customization';
     } else if (type === 'both') {
-        textToCopy = `[SYSTEM]\n${window.currentPrompts.system}\n\n[USER]\n${window.currentPrompts.user}`;
+        textToCopy = `[GOAL FRAMEWORK]\n${window.currentPrompts.system}\n\n[YOUR CUSTOMIZATION]\n${window.currentPrompts.user}`;
         label = 'Both Prompts';
     }
 
