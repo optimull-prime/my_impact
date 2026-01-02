@@ -1,0 +1,72 @@
+[build-system]
+requires = ["setuptools>=65.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "myimpact"
+version = "0.1.0"
+description = "AI-powered quarterly goal generation aligned to culture, Radford levels, and job-family expectations."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "MyImpact Team", email = "team@myimpact.local"}
+]
+keywords = ["goals", "career-development", "culture", "radford", "llm"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "click>=8.1.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "black>=23.0.0",
+    "isort>=5.12.0",
+    "flake8>=6.1.0",
+    "mypy>=1.5.0",
+]
+api = [
+    "fastapi>=0.114.0",
+    "uvicorn[standard]>=0.30.0",
+]
+azure = [
+    "azure-identity>=1.14.0",
+    "azure-keyvault-secrets>=4.7.0",
+    "azure-cosmos>=4.5.0",
+    "openai>=1.52.0",
+]
+
+[project.scripts]
+myimpact = "myimpact.cli:main"
+
+[tool.setuptools]
+packages = ["myimpact"]
+
+[tool.setuptools.package-data]
+myimpact = ["prompts/**/*.txt", "prompts/**/*.md", "data/**/*.csv"]
+
+[tool.black]
+line-length = 100
+target-version = ["py310"]
+
+[tool.isort]
+profile = "black"
+line_length = 100
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false

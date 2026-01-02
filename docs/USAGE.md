@@ -17,36 +17,36 @@
 ### List Available Options
 View all scales, levels, growth intensities, goal styles, and organizations:
 ```powershell
-python .\scripts\prompt_assembler.py --list-options
+myimpact list-options
 ```
 
 ### Independent Goals (Default)
 Generate 6–9 standalone goals with no dependencies:
 ```powershell
 # Default: independent goals, demo org, technical track, L30, moderate growth
-python .\scripts\prompt_assembler.py technical L30 moderate
+myimpact generate technical "L30–35 (Career)" moderate
 
 # With theme bias
-python .\scripts\prompt_assembler.py technical L30 moderate --theme "Standardize for Speed and Interchangeability"
+myimpact generate technical "L30–35 (Career)" moderate --goal-style progressive --theme "Standardize for Speed and Interchangeability"
 
 # Leadership track
-python .\scripts\prompt_assembler.py leadership L80 moderate --org demo
+myimpact generate leadership "L80–85 (VP)" moderate --org demo
 
 # Aggressive growth intensity
-python .\scripts\prompt_assembler.py technical L40 aggressive --org demo
+myimpact generate technical "L40–45 (Advanced)" aggressive --org demo
 ```
 
 ### Progressive Goals
 Generate 4 quarterly goals that build upon each other (Q1 → Q4):
 ```powershell
 # Progressive goals, technical track, L50, aggressive growth
-python .\scripts\prompt_assembler.py technical L50 aggressive --goal-style progressive
+myimpact generate technical "L50–55 (Expert)" aggressive --goal-style progressive
 
 # Progressive with theme bias
-python .\scripts\prompt_assembler.py technical L40 moderate --goal-style progressive --theme "Increase productivity"
+myimpact generate technical "L40–45 (Advanced)" moderate --goal-style progressive --theme "Increase productivity"
 
 # Leadership track, progressive
-python .\scripts\prompt_assembler.py leadership L90 aggressive --goal-style progressive --org demo
+myimpact generate leadership "L90–95 (SVP)" aggressive --goal-style progressive --org demo
 ```
 
 ### Goal Style Comparison

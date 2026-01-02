@@ -1,45 +1,118 @@
 # MyImpact
 
-**MyImpact** helps employees generate quarterly, SMART, career goals aligned to company culture, job-family expectations, and personal growth. Built on LLM technology with structured grounding (no RAG in early phases).
+AI-powered quarterly goal generation aligned to company culture, Radford level expectations, and job-family competencies.
 
-Assumption: curated knowledge (culture × Radford level × job-family + optional org themes) fits within a ~256K context window. We use structured grounding (no RAG in early phases) to assemble concise prompts for LLM goal generation and a chat-based refinement experience.
+## Vision
 
-## Phase 0 (POC)
-- Persist cultural principles mapped to Radford levels (higher level → higher expectations).
-- Compute expectation profile: culture × level × job-family.
-- Generate 6–9 SMART quarterly goals across growth bands (minimal, moderate, aggressive); enforce locus of control.
-- Chat refinement (tighten metrics, split/merge, adjust growth band); export to Markdown/CSV.
-- Dev-only auth: Entra ID single-tenant or demo-mode bias prompt.
+**MyImpact** generates context-rich prompts to help employees create quarterly SMART goals aligned to:
+- **Company cultural principles** (8 attributes: humble, hardworking, continuous learner, world-class, transparency, improvement, respect, ownership)
+- **Level expectations** (technical L10–L65, leadership L30–L100+)
+- **Organizational themes** (strategic priorities, focus areas, department level, team level context)
 
-## Curated Knowledge
-Admins can freely edit CSV files under `data/`:
-- `culture_expectations_technical.csv` — Cultural attributes + manifestations across technical Radford levels (L10–15 through L60–65).
-- `culture_expectations_leadership.csv` — Cultural attributes + manifestations across leadership Radford levels (L70–75 through L100+).
-- Add more scales as needed (e.g., `culture_expectations_product.csv`).
+### Prompt-First Approach
 
-Markdown files under `prompts/`:
-- `org_themes_{orgname}.md` — Strategic themes and organizational context per organization (e.g., `org_themes_demo.md`, `org_themes_acme.md`).
-- Admins can easily edit these in any text editor.
+The tool's **primary use case** is generating high-quality prompts that users can:
+- **Copy into any LLM** (ChatGPT, Claude, Gemini, etc.) to generate personalized goals
+- **Customize** with additional personal context before LLM submission
+- **Use as templates** for self-reflection and goal planning sessions
 
-## Prompt Assembly
-See `scripts/prompt_assembler.py` for assembling a complete system+user prompt. It:
-1. Loads the culture CSV for the selected scale and level.
-2. Extracts the cultural attributes and expectations.
-3. Loads org themes for the specified organization (optional theme bias).
-4. Outputs system + user prompt ready for Azure OpenAI.
+**Future Enhancement**: Optional "Quick LLM" buttons if there's demand (currently API can integrate Azure OpenAI, but prompts-only mode is the focus).
 
-## Multi-Tenant & Multi-Org Support
-The system supports multiple organizations, each with independent strategic themes:
-- Each organization has its own `org_themes_{orgname}.md` file.
-- Sensitive org data can be access-controlled later via Entra ID roles and groups (no individual users).
-- Currently, all data is accessible; role-based access to follow in Phase 2+.
+## Quick Start
 
-## Dev→Prod Portability (Azure)
-- App: Azure App Service or Static Web Apps + Functions (API).
-- LLM: Azure OpenAI for chat completions.
-- Data: Cosmos DB (tenant-partitioned). Key Vault for secrets. Managed Identities.
-- IaC: Bicep modules with per-env parameters.
+### 1. Set Up the Virtual Environment
 
-## Next
-- Finalize curated datasets and expectation profile assembly.
-- Implement minimal API and chat UI.
+```bash
+# Create venv
+python -m venv .venv
+
+# Activate venv (Windows PowerShell)
+.\.venv\Scripts\Activate.ps1
+
+# Install package in editable mode with all dependencies
+pip install -e ".[dev]"
+
+
+# Or for Phase 1 API work:
+pip install -e ".[dev,api,azure]"
+```
+
+### 2. List Available Options
+
+```bash
+myimpact list-options
+```
+
+### 3. Generate a Prompt
+
+```bash
+# Independent goals (default)
+myimpact generate technical L30 moderate
+
+# Progressive goals with org theme
+myimpact generate leadership L80 aggressive --org demo --theme "Standardize for Speed and Interchangeability" --goal-style progressive
+```
+
+## Project Structure
+
+```
+myimpact/
+  __init__.py          # Package metadata
+  assembler.py         # Core prompt assembly logic
+  cli.py              # CLI interface
+data/
+  culture_expectations_technical.csv
+  culture_expectations_leadership.csv
+prompts/
+  goal_generation_system_prompt.txt
+  org_themes_demo.md
+```
+
+## Admin Guide
+
+### Editing Culture Expectations
+
+1. Open `data/culture_expectations_[technical|leadership].csv` in Excel or Sheets.
+2. Rows = cultural attributes; Columns = Radford levels.
+3. Edit expectations; save as CSV.
+4. Re-run CLI to validate: `myimpact list-options`
+
+### Editing Organization Themes
+
+1. Open `prompts/org_themes_[orgname].md`.
+2. Add/edit strategic themes in markdown format.
+3. Use theme names in CLI: `myimpact generate ... --theme "Theme Name"`
+
+### Editing System Prompt
+
+1. Open `prompts/goal_generation_system_prompt.txt`.
+2. Update LLM behavior, output format, or constraints.
+3. Changes apply to next CLI run.
+
+## Phase Roadmap
+
+- **Phase 0**: ✅ MVP prompt assembler, CLI, editable data files
+- **Phase 1**: API, persistence (Cosmos DB), Azure OpenAI integration, auth (Entra ID)
+- **Phase 2**: RAG (optional), org themes dimension, multi-tenant governance
+- **Phase 3**: Production scaling, compliance, cost optimization
+
+## Development
+
+```bash
+# Lint
+black myimpact/
+isort myimpact/
+
+# Type check
+mypy myimpact/
+
+# Run tests
+pytest
+
+# Security scan
+snyk code test myimpact/
+```
+
+## License
+
+MIT
