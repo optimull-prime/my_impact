@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyImpact - Generate Culture-Aligned Career Goals</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .spinner {
+            border: 3px solid rgba(59, 130, 246, 0.1);
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .toast {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .collapsible-btn:after {
+            content: '▼';
+            display: inline-block;
+            margin-left: 8px;
+            transition: transform 0.3s;
+        }
+
+        .collapsible-btn.collapsed:after {
+            transform: rotate(-90deg);
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-b from-slate-50 to-slate-100 text-gray-800">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                    <span class="text-white font-bold text-lg">M</span>
+                </div>
+                <span class="font-bold text-lg text-gray-900">MyImpact</span>
+            </div>
+            <div class="text-sm text-gray-600">Generate Culture-Aligned Goals</div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero" class="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-16 px-4">
+        <div class="max-w-4xl mx-auto text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Generate Culture-Aligned Career Goals</h1>
+            <p class="text-xl text-blue-100 mb-8">Create personalized, SMART goals aligned to your company's culture and
+                level expectations—then paste into any LLM.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 text-left">
+                <div class="bg-blue-500 bg-opacity-50 rounded-lg p-4">
+                    <div class="font-semibold mb-2">✓ Radford-Aligned</div>
+                    <p class="text-blue-50 text-sm">Goals match your level expectations (L10–L100+)</p>
+                </div>
+                <div class="bg-blue-500 bg-opacity-50 rounded-lg p-4">
+                    <div class="font-semibold mb-2">✓ Culture-Aware</div>
+                    <p class="text-blue-50 text-sm">Reflects your company's core principles</p>
+                </div>
+                <div class="bg-blue-500 bg-opacity-50 rounded-lg p-4">
+                    <div class="font-semibold mb-2">✓ LLM-Agnostic</div>
+                    <p class="text-blue-50 text-sm">Works with ChatGPT, Claude, Gemini, or any LLM</p>
+                </div>
+                <div class="bg-blue-500 bg-opacity-50 rounded-lg p-4">
+                    <div class="font-semibold mb-2">✓ Locus of Control</div>
+                    <p class="text-blue-50 text-sm">Goals you can influence, not dependent on others</p>
+                </div>
+            </div>
+
+            <button onclick="document.getElementById('form-section').scrollIntoView({behavior: 'smooth'})"
+                class="bg-white text-blue-600 hover:bg-gray-100 font-bold py-3 px-8 rounded-lg transition">
+                Get Started →
+            </button>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="max-w-4xl mx-auto px-4 py-12">
+        <!-- Input Form Section -->
+        <section id="form-section" class="bg-white rounded-lg shadow-md p-8 mb-8">
+            <h2 class="text-2xl font-bold mb-6 text-gray-900">Your Context</h2>
+
+            <form id="prompt-form" class="space-y-6">
+                <!-- Scale Selection -->
+                <div>
+                    <label for="scale" class="block text-sm font-semibold text-gray-700 mb-2">Scale / Track *</label>
+                    <select id="scale" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="">Select your scale...</option>
+                    </select>
+                    <p class="text-xs text-gray-500 mt-1">Individual Contributor or People Leader path</p>
+                </div>
+
+                <!-- Level Selection -->
+                <div>
+                    <label for="level" class="block text-sm font-semibold text-gray-700 mb-2">Radford Level *</label>
+                    <select id="level" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="">Select your level...</option>
+                    </select>
+                    <p class="text-xs text-gray-500 mt-1">Your current career level (e.g., L30–L35)</p>
+                </div>
+
+                <!-- Growth Intensity -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">Growth Intensity *</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center cursor-pointer">
+                            <input type="radio" name="growth_intensity" value="minimal" class="w-4 h-4 text-blue-600"
+                                required>
+                            <span class="ml-3"><strong>Minimal</strong> – Focus on foundational skills &
+                                consistency</span>
+                        </label>
+                        <label class="flex items-center cursor-pointer">
+                            <input type="radio" name="growth_intensity" value="moderate" class="w-4 h-4 text-blue-600"
+                                checked>
+                            <span class="ml-3"><strong>Moderate</strong> – Balance learning with measurable
+                                contributions</span>
+                        </label>
+                        <label class="flex items-center cursor-pointer">
+                            <input type="radio" name="growth_intensity" value="aggressive"
+                                class="w-4 h-4 text-blue-600">
+                            <span class="ml-3"><strong>Aggressive</strong> – Stretch goals for strategic impact</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Organization -->
+                <div>
+                    <label for="org" class="block text-sm font-semibold text-gray-700 mb-2">Organization *</label>
+                    <select id="org" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="">Select your organization...</option>
+                    </select>
+                </div>
+
+                <!-- Strategic Theme (Optional) -->
+                <div>
+                    <label for="theme" class="block text-sm font-semibold text-gray-700 mb-2">Strategic Theme <span
+                            class="text-gray-400 font-normal">(optional)</span></label>
+                    <input type="text" id="theme" placeholder="e.g., 'Increase Productivity' or 'Cloud Migration'"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <p class="text-xs text-gray-500 mt-1">A theme to bias goal generation (optional)</p>
+                </div>
+
+                <!-- Goal Style -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">Goal Style *</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center cursor-pointer">
+                            <input type="radio" name="goal_style" value="independent" class="w-4 h-4 text-blue-600"
+                                checked required>
+                            <span class="ml-3"><strong>Independent</strong> – 6–9 standalone goals in any order</span>
+                        </label>
+                        <label class="flex items-center cursor-pointer">
+                            <input type="radio" name="goal_style" value="progressive" class="w-4 h-4 text-blue-600">
+                            <span class="ml-3"><strong>Progressive</strong> – 4 quarterly goals building on each
+                                other</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex gap-4 pt-4">
+                    <button type="submit" id="generate-btn"
+                        class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition">
+                        Generate Prompt
+                    </button>
+                    <button type="button" id="reset-btn" onclick="resetForm()"
+                        class="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition font-semibold text-gray-700">
+                        Reset
+                    </button>
+                </div>
+
+                <p class="text-xs text-gray-500">* Required fields</p>
+            </form>
+        </section>
+
+        <!-- Results Section (Hidden until results are generated) -->
+        <section id="results-section" class="hidden space-y-6">
+            <!-- Loading Indicator -->
+            <div id="loading" class="hidden flex justify-center py-12">
+                <div class="text-center">
+                    <div class="spinner mx-auto mb-4"></div>
+                    <p class="text-gray-600 font-semibold">Generating your prompts...</p>
+                </div>
+            </div>
+
+            <!-- Results Container (shown after loading) -->
+            <div id="results-container" class="hidden space-y-6">
+                <!-- System Prompt Section -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <button type="button"
+                        class="collapsible-btn w-full px-6 py-4 bg-blue-50 hover:bg-blue-100 border-b border-gray-200 text-left font-semibold text-gray-900 flex justify-between items-center transition"
+                        onclick="toggleCollapsible(this)">
+                        <span>System Prompt</span>
+                    </button>
+                    <div class="hidden p-6 max-h-64 overflow-y-auto">
+                        <div id="system-prompt-content"
+                            class="text-sm text-gray-700 whitespace-pre-wrap font-mono bg-gray-50 p-4 rounded border border-gray-200">
+                        </div>
+                        <button type="button" onclick="copyPrompt('system')"
+                            class="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded transition">
+                            Copy System Prompt
+                        </button>
+                    </div>
+                </div>
+
+                <!-- User Context Section -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <button type="button"
+                        class="collapsible-btn w-full px-6 py-4 bg-green-50 hover:bg-green-100 border-b border-gray-200 text-left font-semibold text-gray-900 flex justify-between items-center transition"
+                        onclick="toggleCollapsible(this)">
+                        <span>User Context</span>
+                    </button>
+                    <div class="hidden p-6 max-h-64 overflow-y-auto">
+                        <div id="user-context-content"
+                            class="text-sm text-gray-700 whitespace-pre-wrap font-mono bg-gray-50 p-4 rounded border border-gray-200">
+                        </div>
+                        <button type="button" onclick="copyPrompt('user')"
+                            class="mt-4 w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded transition">
+                            Copy User Context
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Combined Copy Button -->
+                <button type="button" onclick="copyPrompt('both')"
+                    class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg transition">
+                    Copy Both Prompts
+                </button>
+
+                <!-- Start Over Button -->
+                <button type="button" onclick="startOver()"
+                    class="w-full border-2 border-gray-300 text-gray-700 hover:bg-gray-50 font-semibold py-3 px-6 rounded-lg transition">
+                    Start Over
+                </button>
+            </div>
+
+            <!-- Error Message (shown on error) -->
+            <div id="error-message" class="hidden bg-red-50 border border-red-200 rounded-lg p-6">
+                <h3 class="font-semibold text-red-800 mb-2">Error Generating Prompts</h3>
+                <p id="error-text" class="text-red-700"></p>
+                <button type="button" onclick="document.getElementById('error-message').classList.add('hidden')"
+                    class="mt-4 text-red-600 hover:text-red-800 font-semibold">Dismiss</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg hidden toast">
+        <span id="toast-message">Copied to clipboard!</span>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 text-center py-6 mt-16 text-sm">
+        <p>MyImpact v0.2.0 | <a href="#" class="text-blue-400 hover:text-blue-300">Documentation</a> | <a href="#"
+                class="text-blue-400 hover:text-blue-300">Privacy</a></p>
+    </footer>
+
+    <script src="js/api.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>

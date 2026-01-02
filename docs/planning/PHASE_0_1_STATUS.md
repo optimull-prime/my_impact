@@ -1,3 +1,5 @@
+> **Note**: This is the initial project plan created at the start of Phase 0. For a comparison of plan vs. actual implementation, compare this document against the current repository state.
+
 # Phase 0 & Phase 1 Completion Status Report
 
 ## Executive Summary

@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import Optional
 import os
@@ -31,9 +32,7 @@ if AOAI_ENABLED:
 
         client = AzureOpenAI(
             api_key=os.environ.get("AZURE_OPENAI_API_KEY"),
-            api_version=os.environ.get(
-                "AZURE_OPENAI_API_VERSION", "2024-08-01-preview"
-            ),
+            api_version=os.environ.get("AZURE_OPENAI_API_VERSION", "2024-08-01-preview"),
             azure_endpoint=os.environ.get("AZURE_OPENAI_ENDPOINT"),
         )
     except Exception:
@@ -44,7 +43,22 @@ app = FastAPI(
     version="0.1.0",
     description="Generate SMART goal prompts aligned to culture, Radford levels, and org themes. "
     "Primary mode: Returns prompts for users to paste into their LLM of choice. "
-    "Optional: Direct Azure OpenAI integration if credentials configured."
+    "Optional: Direct Azure OpenAI integration if credentials configured.",
+)
+
+# Add CORS middleware to allow frontend requests
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "https://myimpact-demo.azurestaticapps.net",  # Production
+        "https://*.azurestaticapps.net",  # Azure Static Web Apps branch previews
+        "http://localhost:3000",  # Local dev (frontend)
+        "http://localhost:8080",  # Local dev (alternative port)
+        "http://localhost:5173",  # Local dev (Vite, if upgraded later)
+    ],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["*"],
 )
 
 
@@ -68,18 +82,24 @@ def get_metadata():
     }
 
 
+@app.get("/api/health")
+def health_check():
+    """Health check endpoint for deployment monitoring."""
+    return {"status": "healthy", "version": "0.1.0"}
+
+
 @app.post("/api/goals/generate")
 def generate_goals(payload: GenerateRequest):
     """
     Generate goal prompts for the specified context.
-    
+
     **Primary Use**: Returns crafted prompts (system + user) for copying into any LLM.
-    
+
     **Optional Azure OpenAI**: If AZURE_OPENAI_ENDPOINT configured, also returns
     LLM-generated goals in the 'result' field. Otherwise, 'result' is null.
     """
     # Assemble prompts
-    prompt = assemble_prompt(
+    system_prompt, user_context = assemble_prompt(
         payload.scale,
         payload.level,
         payload.growth_intensity,
@@ -97,8 +117,8 @@ def generate_goals(payload: GenerateRequest):
                 model=os.environ["AZURE_OPENAI_DEPLOYMENT"],
                 temperature=float(os.getenv("GEN_TEMPERATURE", 0.9)),
                 messages=[
-                    {"role": "system", "content": prompt["system"]},
-                    {"role": "user", "content": prompt["user"]},
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_context},
                 ],
             )
             result_text = completion.choices[0].message.content
@@ -108,7 +128,7 @@ def generate_goals(payload: GenerateRequest):
 
     return {
         "inputs": payload.model_dump(),
-        "prompts": prompt,
+        "prompts": [system_prompt, user_context],  # Return as list, not tuple
         "result": result_text,  # May be None if AOAI isn't configured
         "powered_by": "Azure OpenAI" if AOAI_ENABLED else "prompts-only",
     }

@@ -1,118 +1,215 @@
 # MyImpact
 
-AI-powered quarterly goal generation aligned to company culture, Radford level expectations, and job-family competencies.
+AI-ready quarterly goal generation aligned to company culture, Radford level expectations, and job-family competencies.
 
-## Vision
+## Overview
 
 **MyImpact** generates context-rich prompts to help employees create quarterly SMART goals aligned to:
 - **Company cultural principles** (8 attributes: humble, hardworking, continuous learner, world-class, transparency, improvement, respect, ownership)
-- **Level expectations** (technical L10–L65, leadership L30–L100+)
-- **Organizational themes** (strategic priorities, focus areas, department level, team level context)
+- **Level expectations** (technical L10–L35+, leadership L70–L100+)
+- **Organizational themes** (strategic priorities, focus areas, org level context)
 
-### Prompt-First Approach
+The primary use case is **generating prompts to copy into any LLM** (ChatGPT, Claude, Gemini, etc.) for personalized goal generation.
 
-The tool's **primary use case** is generating high-quality prompts that users can:
-- **Copy into any LLM** (ChatGPT, Claude, Gemini, etc.) to generate personalized goals
-- **Customize** with additional personal context before LLM submission
-- **Use as templates** for self-reflection and goal planning sessions
+---
 
-**Future Enhancement**: Optional "Quick LLM" buttons if there's demand (currently API can integrate Azure OpenAI, but prompts-only mode is the focus).
+## 🚀 Getting Started
 
-## Quick Start
+Choose your path based on what you want to do:
 
-### 1. Set Up the Virtual Environment
+### I want to try it quickly (5 minutes)
+→ [**Quick Start Guide**](docs/guides/01-quick-start.md)
 
-```bash
-# Create venv
-python -m venv .venv
+Set up locally and test the web app in 5 minutes.
 
-# Activate venv (Windows PowerShell)
-.\.venv\Scripts\Activate.ps1
+### I want to develop locally
+→ [**Local Development Guide**](docs/guides/02-local-development.md)
 
-# Install package in editable mode with all dependencies
-pip install -e ".[dev]"
+Complete setup guide for developers, with debugging tips and troubleshooting.
 
+### I want to deploy to Azure
+→ [**Deployment Guide**](docs/guides/03-deployment.md)
 
-# Or for Phase 1 API work:
-pip install -e ".[dev,api,azure]"
-```
+Step-by-step instructions for deploying frontend to Azure Static Web Apps and backend to Azure Container Apps.
 
-### 2. List Available Options
+### I want to understand the system design
+→ [**Architecture Overview**](docs/architecture/overview.md)
 
-```bash
-myimpact list-options
-```
+System design, component breakdown, data model, and scalability considerations.
 
-### 3. Generate a Prompt
+### I want to integrate with the API
+→ [**API Reference**](docs/api/README.md)
 
-```bash
-# Independent goals (default)
-myimpact generate technical L30 moderate
+Endpoints, request/response schemas, and integration examples in curl, Python, and JavaScript.
 
-# Progressive goals with org theme
-myimpact generate leadership L80 aggressive --org demo --theme "Standardize for Speed and Interchangeability" --goal-style progressive
-```
+---
 
 ## Project Structure
 
 ```
 myimpact/
-  __init__.py          # Package metadata
-  assembler.py         # Core prompt assembly logic
-  cli.py              # CLI interface
-data/
-  culture_expectations_technical.csv
-  culture_expectations_leadership.csv
-prompts/
-  goal_generation_system_prompt.txt
-  org_themes_demo.md
+├── docs/                              # 📚 All documentation
+│   ├── guides/                        # Step-by-step guides
+│   │   ├── 01-quick-start.md          # 5-minute setup (START HERE!)
+│   │   ├── 02-local-development.md    # Full dev guide
+│   │   └── 03-deployment.md           # Deploy to Azure
+│   ├── api/                           # API reference
+│   │   └── README.md                  # Endpoints, schemas, examples
+│   ├── architecture/                  # Technical design
+│   │   └── overview.md                # System architecture
+│   └── planning/                      # Phase planning docs
+│       ├── README.md
+│       ├── PHASE_0_1_STATUS.md
+│       ├── PHASE_2_BUILD_SUMMARY.md
+│       ├── PHASE_2_COMPLETE.md
+│       └── PHASE_2_README.md
+│
+├── myimpact/                          # 🐍 Python package
+│   ├── assembler.py                   # Prompt generation logic
+│   └── cli.py                         # Command-line interface
+│
+├── api/                               # 🚀 FastAPI application
+│   └── main.py                        # API endpoints
+│
+├── webapp/                            # 🌐 Static web app
+│   ├── index.html                     # Single-page app
+│   ├── staticwebapp.config.json       # Azure SWA config
+│   └── js/
+│       ├── app.js                     # Main logic
+│       └── api.js                     # API client
+│
+├── data/                              # 📊 Culture expectations
+│   ├── culture_expectations_technical.csv
+│   └── culture_expectations_leadership.csv
+│
+├── tests/                             # ✅ Test suite
+│   ├── test_assembler.py
+│   ├── test_api.py
+│   └── test_cli.py
+│
+├── infra/                             # ☁️ Infrastructure (Bicep templates)
+│   ├── bicep/                         # IaC definitions
+│   └── README.md
+│
+├── pyproject.toml                     # Python dependencies
+├── Dockerfile                         # Container image
+├── CONTRIBUTING.md                    # Contributing guidelines
+└── LICENSE.txt
+
 ```
 
-## Admin Guide
+---
 
-### Editing Culture Expectations
+## Quick Reference
 
-1. Open `data/culture_expectations_[technical|leadership].csv` in Excel or Sheets.
-2. Rows = cultural attributes; Columns = Radford levels.
-3. Edit expectations; save as CSV.
-4. Re-run CLI to validate: `myimpact list-options`
+### For Users
+- **Try it**: [Quick Start Guide](docs/guides/01-quick-start.md)
+- **Deploy it**: [Deployment Guide](docs/guides/03-deployment.md)
+- **Use the API**: [API Reference](docs/api/README.md)
 
-### Editing Organization Themes
+### For Developers
+- **Set up**: [Local Development Guide](docs/guides/02-local-development.md)
+- **Understand it**: [Architecture Overview](docs/architecture/overview.md)
+- **Contribute**: [CONTRIBUTING.md](CONTRIBUTING.md)
 
-1. Open `prompts/org_themes_[orgname].md`.
-2. Add/edit strategic themes in markdown format.
-3. Use theme names in CLI: `myimpact generate ... --theme "Theme Name"`
+### For the Project
+- **Phase planning**: [docs/planning/](docs/planning/)
+- **Infrastructure**: [infra/README.md](infra/README.md)
 
-### Editing System Prompt
+---
 
-1. Open `prompts/goal_generation_system_prompt.txt`.
-2. Update LLM behavior, output format, or constraints.
-3. Changes apply to next CLI run.
+## Stack
 
-## Phase Roadmap
+| Layer | Technology |
+|-------|-----------|
+| **Frontend** | HTML/CSS/JavaScript (Tailwind CSS) |
+| **Backend** | Python 3.10+ (FastAPI, Uvicorn) |
+| **Data** | CSV files (culture expectations) |
+| **Deployment** | Azure Static Web Apps (frontend) + Azure Container Apps (backend) |
+| **Containers** | Docker, Azure Container Registry |
+| **Testing** | pytest |
 
-- **Phase 0**: ✅ MVP prompt assembler, CLI, editable data files
-- **Phase 1**: API, persistence (Cosmos DB), Azure OpenAI integration, auth (Entra ID)
-- **Phase 2**: RAG (optional), org themes dimension, multi-tenant governance
-- **Phase 3**: Production scaling, compliance, cost optimization
+---
 
-## Development
+## Installation
+
+### Option 1: Quick Start (Recommended)
+Follow the [Quick Start Guide](docs/guides/01-quick-start.md) for a 5-minute setup.
+
+### Option 2: Full Development Setup
+Follow the [Local Development Guide](docs/guides/02-local-development.md).
+
+### Option 3: Deploy to Azure
+Follow the [Deployment Guide](docs/guides/03-deployment.md).
+
+---
+
+## Commands
+
+### Package Installation
 
 ```bash
-# Lint
-black myimpact/
-isort myimpact/
+# Install with API dependencies
+pip install -e ".[api]"
 
-# Type check
-mypy myimpact/
+# Install with dev dependencies (testing, formatting, etc.)
+pip install -e ".[dev]"
 
-# Run tests
+# Install everything (API + Azure + dev)
+pip install -e ".[api,dev,azure]"
+```
+
+### Running Locally
+
+```bash
+# Start the backend API (FastAPI)
+uvicorn api.main:app --reload
+
+# In another terminal, serve the frontend
+cd webapp
+python -m http.server 8080
+
+# Visit http://localhost:8080
+```
+
+### Testing
+
+```bash
 pytest
 
-# Security scan
-snyk code test myimpact/
+# With coverage
+pytest --cov=myimpact
 ```
+
+### CLI
+
+```bash
+# List available options
+myimpact list-options
+
+# Generate independent goals (technical)
+myimpact generate technical L30 moderate
+
+# Generate progressive goals (leadership)
+myimpact generate leadership L80 aggressive --org demo --goal-style progressive
+```
+
+---
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+---
 
 ## License
 
-MIT
+[LICENSE.txt](LICENSE.txt)
+
+---
+
+## Status
+
+🔄 **Phase 2 (MVP)**: Web app demo complete, ready for feedback
+
+See [docs/planning/](docs/planning/) for detailed phase planning and historical phase documents.
