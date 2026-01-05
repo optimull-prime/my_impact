@@ -3,7 +3,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import Optional
 
-from myimpact.assembler import assemble_prompt, discover_levels, discover_orgs, discover_scales
+from myimpact.assembler import (
+    assemble_prompt,
+    discover_levels,
+    discover_orgs,
+    discover_scales,
+    load_org_focus_areas,
+)
 
 app = FastAPI(
     title="MyImpact API",
@@ -65,6 +71,16 @@ async def metadata():
         "goal_styles": ["independent", "progressive"],
         "organizations": discover_orgs(),
     }
+
+
+@app.get("/api/orgs/{org_name}/focus-areas", tags=["Metadata"])
+async def get_org_focus_areas(org_name: str):
+    """Get strategic focus areas for an organization."""
+    try:
+        content = load_org_focus_areas(org_name)
+        return {"content": content}
+    except FileNotFoundError:
+        return {"content": None}
 
 
 @app.post("/api/goals/generate", tags=["Goals"])

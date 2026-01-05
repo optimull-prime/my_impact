@@ -87,37 +87,37 @@ function populateOrgDropdown() {
 }
 
 /**
- * Handle organization change - display full org themes
+ * Handle organization change - display full org focus areas
  */
 function onOrgChange() {
     const orgSelect = document.getElementById('org');
     const selectedOrg = orgSelect.value;
 
-    const orgThemesContainer = document.getElementById('org-themes-container');
-    const orgThemesDisplay = document.getElementById('org-themes-display');
+    const focusAreasContainer = document.getElementById('org-focus-areas-container');
+    const focusAreasDisplay = document.getElementById('org-focus-areas-display');
 
     console.log('Organization changed to:', selectedOrg);
 
     if (!selectedOrg || !cachedMetadata) {
-        orgThemesContainer.classList.add('hidden');
-        orgThemesDisplay.value = '';
+        focusAreasContainer.classList.add('hidden');
+        focusAreasDisplay.value = '';
         return;
     }
 
-    // Fetch and display full org themes content
-    console.log('Fetching org themes for:', selectedOrg);
-    fetchOrgThemes(selectedOrg).then(content => {
-        console.log('Org themes received:', content ? 'YES' : 'NO');
+    // Fetch and display full org focus areas content
+    console.log('Fetching org focus areas for:', selectedOrg);
+    fetchOrgFocusAreas(selectedOrg).then(content => {
+        console.log('Org focus areas received:', content ? 'YES' : 'NO');
         if (content) {
-            orgThemesDisplay.value = content;
-            orgThemesContainer.classList.remove('hidden');
+            focusAreasDisplay.value = content;
+            focusAreasContainer.classList.remove('hidden');
         } else {
-            orgThemesContainer.classList.add('hidden');
-            orgThemesDisplay.value = '';
+            focusAreasContainer.classList.add('hidden');
+            focusAreasDisplay.value = '';
         }
     }).catch(error => {
-        console.error('Error fetching org themes:', error);
-        orgThemesContainer.classList.add('hidden');
+        console.error('Error fetching org focus areas:', error);
+        focusAreasContainer.classList.add('hidden');
     });
 }
 
@@ -232,7 +232,8 @@ async function copyPrompt(type) {
 function resetForm() {
     document.getElementById('prompt-form').reset();
     document.getElementById('results-section').classList.add('hidden');
-    document.getElementById('level').innerHTML = '<option value="">Select your level...</option>';
+    document.getElementById('org-focus-areas-container').classList.add('hidden');
+    document.getElementById('org-focus-areas-display').value = '';
     window.currentPrompts = null;
     document.getElementById('form-section').scrollIntoView({ behavior: 'smooth' });
 }

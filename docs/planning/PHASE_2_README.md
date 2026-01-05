@@ -242,13 +242,13 @@ Cultural Attribute,L10,L20,L30
 Ownership,"Ask for help","Take initiative","Own outcomes"
 ```
 
-### Organization Themes
+### Organization Focus Areas
 
-Org-specific themes (Markdown files):
-- `prompts/org_themes_demo.md`
-- `prompts/org_themes_hc.md`
+Org-specific focus areas (Markdown files):
+- `prompts/org_focus_areas_demo.md`
+- `prompts/org_focus_areas_hc.md`
 
-Include strategic themes and context relevant to the organization.
+Include strategic focus areas and context relevant to the organization.
 
 ### System Prompt
 
