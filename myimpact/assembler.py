@@ -80,7 +80,7 @@ def discover_orgs() -> list:
 
 
 def extract_levels_from_csv(scale: str) -> list:
-    """Extract available Radford levels from CSV column headers."""
+    """Extract available job levels from CSV column headers."""
     culture = load_culture_csv(scale)
     if not culture:
         return []
@@ -164,7 +164,7 @@ def assemble_prompt(
 ## Context for Goal Generation
 
 **Scale/Track**: {scale.capitalize()}
-**Radford Level**: {level}
+**Job Level**: {level}
 **Growth Intensity**: {growth_intensity}
 **Goal Style**: {goal_style}
 **Organization**: {org_name}
@@ -198,7 +198,7 @@ The user wants to emphasize the following areas or themes:
 ### Your Task
 Generate quarterly career goals that:
 1. Demonstrate progress toward the cultural principles above.
-2. Meet the Radford level expectations.
+2. Meet the job level expectations.
 3. Include a rationale connecting each goal to the cultural principles and level expectations.
 4. Follow the goal style (independent or progressive).
 5. Respect the growth intensity band.

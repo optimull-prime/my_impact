@@ -82,7 +82,7 @@ def list_options():
     orgs = discover_org_names()
 
     click.echo("\n" + "=" * 80)
-    click.echo("AVAILABLE RADFORD SCALES")
+    click.echo("AVAILABLE JOB LEVEL SCALES")
     click.echo("=" * 80)
     for scale in scales:
         click.echo(f"\n{scale.upper()}")

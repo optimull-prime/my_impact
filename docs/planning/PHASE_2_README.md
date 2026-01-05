@@ -10,7 +10,7 @@ MyImpact is a web application that generates personalized, **culture-aligned car
 
 ## Key Features (Phase 2 MVP)
 
-✅ **Radford-Aligned Goals** – Goals match your career level expectations (L10–L100+)  
+✅ **Job Level Aligned Goals** – Goals match your career level expectations (L10–L100+)  
 ✅ **Culture-Aware** – Reflects your organization's core principles  
 ✅ **LLM-Agnostic** – Works with ChatGPT, Claude, Gemini, or any LLM  
 ✅ **Locus of Control** – Goals focus on what you can influence  

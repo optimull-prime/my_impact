@@ -24,7 +24,7 @@ class TestCLICommands:
         """Test list-options command."""
         result = self.runner.invoke(main, ["list-options"])
         assert result.exit_code == 0
-        assert "RADFORD SCALES" in result.output
+        assert "JOB LEVEL SCALES" in result.output
         assert "TECHNICAL" in result.output
         assert "LEADERSHIP" in result.output
         assert "GROWTH INTENSITIES" in result.output

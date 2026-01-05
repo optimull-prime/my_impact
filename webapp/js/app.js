@@ -174,13 +174,6 @@ async function onFormSubmit(event) {
         document.getElementById('loading').classList.add('hidden');
         document.getElementById('results-container').classList.remove('hidden');
 
-        // Expand first section by default
-        const firstCollapsible = document.querySelector('.collapsible-btn');
-        if (firstCollapsible) {
-            const nextDiv = firstCollapsible.nextElementSibling;
-            nextDiv.classList.remove('hidden');
-            firstCollapsible.classList.remove('collapsed');
-        }
     } catch (error) {
         console.error('Error generating prompts:', error);
         document.getElementById('loading').classList.add('hidden');
@@ -278,6 +271,14 @@ function showError(message) {
 
     // Scroll to error
     errorMessage.scrollIntoView({ behavior: 'smooth' });
+}
+
+/**
+ * Toggle advanced sections (troubleshooting)
+ */
+function toggleAdvancedSections() {
+    const advancedSections = document.getElementById('advanced-sections');
+    advancedSections.classList.toggle('hidden');
 }
 
 /**

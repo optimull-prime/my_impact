@@ -89,7 +89,7 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 text-left">
                 <div class="bg-blue-500 bg-opacity-50 rounded-lg p-4">
-                    <div class="font-semibold mb-2">✓ Radford-Aligned</div>
+                    <div class="font-semibold mb-2">✓ Job Level Aligned</div>
                     <p class="text-blue-50 text-sm">Goals match your level expectations (L10–L100+)</p>
                 </div>
                 <div class="bg-blue-500 bg-opacity-50 rounded-lg p-4">
@@ -98,7 +98,7 @@
                 </div>
                 <div class="bg-blue-500 bg-opacity-50 rounded-lg p-4">
                     <div class="font-semibold mb-2">✓ LLM-Agnostic</div>
-                    <p class="text-blue-50 text-sm">Works with ChatGPT, Claude, Gemini, or any LLM</p>
+                    <p class="text-blue-50 text-sm">Ready to paste into ChatGPT, Claude, Gemini, or any LLM</p>
                 </div>
                 <div class="bg-blue-500 bg-opacity-50 rounded-lg p-4">
                     <div class="font-semibold mb-2">✓ Locus of Control</div>
@@ -132,7 +132,7 @@
 
                 <!-- Level Selection -->
                 <div>
-                    <label for="level" class="block text-sm font-semibold text-gray-700 mb-2">Radford Level *</label>
+                    <label for="level" class="block text-sm font-semibold text-gray-700 mb-2">Job Level *</label>
                     <select id="level" required
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         <option value="">Select your level...</option>
@@ -179,8 +179,7 @@
                     <label for="org-themes-display" class="block text-sm font-semibold text-gray-700 mb-2">Your
                         Organization's Strategic Focus Areas</label>
                     <textarea id="org-themes-display" rows="8" readonly
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 font-mono text-sm resize-y cursor-default">
-                    </textarea>
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 font-mono text-sm resize-y cursor-default"></textarea>
                     <p class="text-xs text-gray-500 mt-1">📋 These strategic priorities are automatically included in
                         your goal context</p>
                 </div>
@@ -191,8 +190,7 @@
                             class="text-gray-400 font-normal">(optional)</span></label>
                     <textarea id="theme" rows="4"
                         placeholder="Add any additional focus areas or emphasis here...&#10;&#10;Examples:&#10;- Focus on cloud migration specifically&#10;- Emphasize mentoring and team development&#10;- Technical leadership and architecture&#10;- Process improvement and automation"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-sans resize-y">
-                    </textarea>
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-sans resize-y"></textarea>
                     <p class="text-xs text-gray-500 mt-1">💡 Optional: Add specific areas you want to emphasize or
                         challenges you're focusing on</p>
                 </div>
@@ -245,10 +243,12 @@
                 <!-- Combined Copy Button (PRIMARY ACTION - at top) -->
                 <button type="button" onclick="copyPrompt('both')"
                     class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-4 px-6 rounded-lg transition shadow-lg text-lg">
-                    📋 Copy Both Prompts (Recommended)
+                    📋 Copy Full Prompt
                 </button>
+                <p class="text-center text-sm text-gray-500">Ready to paste into ChatGPT, Claude, Gemini, or any LLM</p>
 
                 <!-- Goal Framework Section -->
+                <div id="advanced-sections" class="hidden space-y-6">
                 <div class="bg-white rounded-lg shadow-md overflow-hidden">
                     <button type="button"
                         class="collapsible-btn w-full px-6 py-4 bg-blue-50 hover:bg-blue-100 border-b border-gray-200 text-left font-semibold text-gray-900 flex justify-between items-center transition"
@@ -282,6 +282,15 @@
                             Copy Your Customization
                         </button>
                     </div>
+                </div>
+                </div>
+
+                <!-- Troubleshooting Link (discrete) -->
+                <div class="text-center">
+                    <button type="button" onclick="toggleAdvancedSections()" 
+                        class="text-xs text-gray-400 hover:text-gray-600 underline transition">
+                        Troubleshooting: View individual prompt parts
+                    </button>
                 </div>
 
                 <!-- Start Over Button -->

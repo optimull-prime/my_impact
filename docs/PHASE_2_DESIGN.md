@@ -6,7 +6,7 @@ Phase 2 delivers a demo-ready static web application for **MyImpact** that gener
 
 ## Goals
 
-1. **Demonstrate Value**: Show how MyImpact generates context-rich prompts aligned to culture, Radford levels, and org themes
+1. **Demonstrate Value**: Show how MyImpact generates context-rich prompts aligned to culture, job levels, and org themes
 2. **Prompt-First UX**: Emphasize the "copy to any LLM" workflow (ChatGPT, Claude, Gemini, etc.)
 3. **Azure-Hostable**: Deploy as a static site (Azure Static Web Apps preferred) with minimal hosting costs
 4. **Foundation for Growth**: Architecture supports future enhancements (LLM integration, persistence, auth)
@@ -323,7 +323,7 @@ app.add_middleware(
 
 **Landing Page**:
 - ✅ Hero section with clear value proposition
-- ✅ Benefits list (Radford-aligned, culture-aware, LLM-agnostic)
+- ✅ Benefits list (job level aligned, culture-aware, LLM-agnostic)
 - ✅ Call-to-action button
 
 **Input Form**:

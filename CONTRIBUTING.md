@@ -2,11 +2,11 @@
 
 ## Admin Guide: Editing Curated Knowledge
 
-### Culture & Radford Expectations
+### Culture & Job Leveling Expectations
 
 **File**: `data/culture_expectations_[scale].csv`
 
-Each row is a cultural attribute; each column is a Radford level. Edit cells with expected behaviors at each level.
+Each row is a cultural attribute; each column is a job level. Edit cells with expected behaviors at each level.
 
 **Example**:
 | Cultural Attribute | L10–15 (Entry) | L20–25 (Developing) | ... |
@@ -53,7 +53,7 @@ Adjust LLM behavior: emphasis on locus of control, goal style, rationale, etc.
 
 ### Adding a New Scale
 
-1. Create `data/culture_expectations_[newscale].csv` with cultural attributes and Radford levels.
+1. Create `data/culture_expectations_[newscale].csv` with cultural attributes and job levels.
 2. Run `myimpact list-options` to verify.
 3. Use in CLI: `myimpact generate [newscale] [level] [intensity]`
 
