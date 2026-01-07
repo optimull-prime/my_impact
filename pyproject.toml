@@ -5,14 +5,14 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "myimpact"
 version = "0.1.0"
-description = "AI-powered quarterly goal generation aligned to culture, Radford levels, and job-family expectations."
+description = "AI-powered quarterly goal generation aligned to culture, job levels, and job-family expectations."
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
 authors = [
     {name = "MyImpact Team", email = "team@myimpact.local"}
 ]
-keywords = ["goals", "career-development", "culture", "radford", "llm"]
+keywords = ["goals", "career-development", "culture", "joblevels", "llm"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -36,6 +36,7 @@ dev = [
     "isort>=5.12.0",
     "flake8>=6.1.0",
     "mypy>=1.5.0",
+    "httpx>=0.24.0",
 ]
 api = [
     "fastapi>=0.114.0",

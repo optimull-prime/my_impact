@@ -1,6 +1,6 @@
 # MyImpact
 
-AI-ready quarterly goal generation aligned to company culture, Radford level expectations, and job-family competencies.
+AI-ready quarterly goal generation aligned to company culture, job level expectations, and job-family competencies.
 
 ## Overview
 
@@ -13,7 +13,7 @@ The primary use case is **generating prompts to copy into any LLM** (ChatGPT, Cl
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 Choose your path based on what you want to do:
 

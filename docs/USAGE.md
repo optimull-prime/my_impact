@@ -6,9 +6,9 @@
 3. Save as CSV.
 4. Repeat for other scales if needed.
 
-## Edit Org Themes
-5. Open `prompts/org_themes_demo.md` (or create new files like `org_themes_acme.md` for other organizations).
-6. Edit strategic themes and their implications for each level.
+## Edit Org Focus Areas
+5. Open `prompts/org_focus_areas_demo.md` (or create new files like `org_focus_areas_acme.md` for other organizations).
+6. Edit strategic focus areas and their implications for each level.
 7. Save as markdown.
 
 ## Generate Context

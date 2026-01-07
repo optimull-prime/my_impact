@@ -49,18 +49,18 @@ async function generateGoals(payload) {
 }
 
 /**
- * Fetch full org themes content
+ * Fetch full org focus areas content
  */
-async function fetchOrgThemes(orgName) {
+async function fetchOrgFocusAreas(orgName) {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/orgs/${orgName}/themes`);
+        const response = await fetch(`${API_BASE_URL}/api/orgs/${orgName}/focus-areas`);
         if (!response.ok) {
             throw new Error(`API error: ${response.status}`);
         }
         const data = await response.json();
         return data.content;
     } catch (error) {
-        console.error('Failed to fetch org themes:', error);
+        console.error('Failed to fetch org focus areas:', error);
         return null;
     }
 }
