@@ -72,7 +72,7 @@ def generate(scale, level, growth_intensity, org, theme, goal_style):
         click.echo(user_prompt)
     except Exception as e:
         click.echo(f"Error: {e}", err=True)
-        raise click.Exit(1)
+        raise click.exceptions.Exit(1)
 
 
 @main.command()
