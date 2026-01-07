@@ -78,6 +78,12 @@ function populateOrgDropdown() {
     const orgSelect = document.getElementById('org');
     orgSelect.innerHTML = '<option value="">Select your organization...</option>';
 
+    // Allow opting out of organizational focus
+    const noneOption = document.createElement('option');
+    noneOption.value = 'none';
+    noneOption.textContent = 'None (no organizational focus)';
+    orgSelect.appendChild(noneOption);
+
     cachedMetadata.organizations.forEach(org => {
         const option = document.createElement('option');
         option.value = org;
@@ -98,7 +104,7 @@ function onOrgChange() {
 
     console.log('Organization changed to:', selectedOrg);
 
-    if (!selectedOrg || !cachedMetadata) {
+    if (!selectedOrg || selectedOrg === 'none' || !cachedMetadata) {
         orgThemesContainer.classList.add('hidden');
         orgThemesDisplay.value = '';
         return;
@@ -163,6 +169,10 @@ async function onFormSubmit(event) {
         // Display results
         document.getElementById('system-prompt-content').textContent = systemPrompt;
         document.getElementById('user-context-content').textContent = userContext;
+        
+        // Display full prompt preview
+        const fullPromptPreview = `[GOAL FRAMEWORK]\n${systemPrompt}\n\n[YOUR CUSTOMIZATION]\n${userContext}`;
+        document.getElementById('full-prompt-preview').value = fullPromptPreview;
 
         // Store in window for copy operations
         window.currentPrompts = {
@@ -174,13 +184,7 @@ async function onFormSubmit(event) {
         document.getElementById('loading').classList.add('hidden');
         document.getElementById('results-container').classList.remove('hidden');
 
-        // Expand first section by default
-        const firstCollapsible = document.querySelector('.collapsible-btn');
-        if (firstCollapsible) {
-            const nextDiv = firstCollapsible.nextElementSibling;
-            nextDiv.classList.remove('hidden');
-            firstCollapsible.classList.remove('collapsed');
-        }
+        // Keep collapsible sections collapsed by default (user can expand if needed)
     } catch (error) {
         console.error('Error generating prompts:', error);
         document.getElementById('loading').classList.add('hidden');
@@ -239,6 +243,9 @@ async function copyPrompt(type) {
 function resetForm() {
     document.getElementById('prompt-form').reset();
     document.getElementById('results-section').classList.add('hidden');
+    document.getElementById('org-themes-container').classList.add('hidden');
+    document.getElementById('org-themes-display').value = '';
+    document.getElementById('full-prompt-preview').value = '';
     document.getElementById('level').innerHTML = '<option value="">Select your level...</option>';
     window.currentPrompts = null;
     document.getElementById('form-section').scrollIntoView({ behavior: 'smooth' });
