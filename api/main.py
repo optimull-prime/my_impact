@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import Optional
@@ -83,20 +83,43 @@ async def get_org_focus_areas(org_name: str):
         return {"content": None}
 
 
-@app.post("/api/goals/generate", tags=["Goals"])
+@app.post("/api/goals/generate")
 async def generate_prompts(request: GenerateRequest):
-    system_prompt, user_context = assemble_prompt(
-        scale=request.scale,
-        level=request.level,
-        growth_intensity=request.growth_intensity,
-        org_name=request.org,
-        theme=request.theme,
-        goal_style=request.goal_style,
-    )
+    """Generate goal-setting prompts"""
+    try:
+        system_prompt, user_context = assemble_prompt(
+            scale=request.scale,
+            level=request.level,
+            growth_intensity=request.growth_intensity,
+            org_name=request.org or "demo",
+            goal_style=request.goal_style or "independent",
+            theme=request.theme or None,
+        )
 
-    return {
-        "inputs": request.model_dump(),
-        "prompts": [system_prompt, user_context],
-        "result": None,
-        "powered_by": "prompts-only",
-    }
+        return {
+            "inputs": {
+                "scale": request.scale,
+                "level": request.level,
+                "growth_intensity": request.growth_intensity,
+                "org": request.org or "demo",
+                "goal_style": request.goal_style or "independent",
+                "theme": request.theme,
+            },
+            "prompts": [system_prompt, user_context],
+            "result": None,
+        }
+    except FileNotFoundError as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Configuration error: {str(e)}",
+        )
+    except ValueError as e:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid request parameters: {str(e)}",
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Internal server error: {str(e)}",
+        )
