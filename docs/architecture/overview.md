@@ -29,7 +29,7 @@ graph TD
 
 ## Goals & Principles
 
-1. **Demonstrate Value**: Show how MyImpact generates context-rich prompts aligned to culture, Radford levels, and org themes
+1. **Demonstrate Value**: Show how MyImpact generates context-rich prompts aligned to culture, job levels, and org themes
 2. **Prompt-First UX**: Emphasize the "copy to any LLM" workflow (ChatGPT, Claude, Gemini, etc.)
 3. **Azure-Hostable**: Deploy as static + containerized with minimal hosting costs (~$15/month)
 4. **Foundation for Growth**: Architecture supports future enhancements (LLM integration, persistence, auth)
@@ -64,7 +64,7 @@ webapp/
 #### Landing Section
 - Hero message: "Generate Culture-Aligned Career Goals"
 - Value propositions:
-  - Aligned to level expectations (Radford leveling)
+  - Aligned to job level expectations
   - Reflects company cultural principles
   - SMART goals with locus of control
   - Works with any LLM (ChatGPT, Claude, Gemini, etc.)
@@ -98,7 +98,7 @@ webapp/
 - "Copy User Context" button
 
 **Quick Actions**:
-- "Copy Both Prompts" button (combines with separator)
+- "Copy Prompts" button (combines with separator)
 - "Start Over" button (resets form)
 - Toast notifications on successful copy
 
@@ -232,7 +232,7 @@ Two primary scales:
 - **Leadership**: People managers and leaders (L70–100+)
 
 #### Levels
-Radford leveling system:
+Job leveling system:
 - **Technical Track**: L10–L35+ (10-year spans: Entry → Mid → Senior → Principal)
 - **Leadership Track**: L70–L100+ (10-year spans: Director → VP → C-Suite)
 

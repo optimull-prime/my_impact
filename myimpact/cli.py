@@ -14,11 +14,11 @@ GOAL_STYLES = ["independent", "progressive"]
 
 
 def discover_org_names() -> list:
-    """Discover available organizations from org_themes_*.md files."""
+    """Discover available organizations from org_focus_areas_*.md files."""
     prompts_dir = _get_resource_dir("prompts")
     org_names = []
-    for file in prompts_dir.glob("org_themes_*.md"):
-        org_name = file.stem.replace("org_themes_", "")
+    for file in prompts_dir.glob("org_focus_areas_*.md"):
+        org_name = file.stem.replace("org_focus_areas_", "")
         org_names.append(org_name)
     return sorted(org_names)
 
@@ -79,10 +79,10 @@ def generate(scale, level, growth_intensity, org, theme, goal_style):
 def list_options():
     """List all available configuration options."""
     scales = discover_scales()
-    orgs = discover_org_names()
+    org_names = discover_org_names()
 
     click.echo("\n" + "=" * 80)
-    click.echo("AVAILABLE RADFORD SCALES")
+    click.echo("AVAILABLE JOB LEVEL SCALES")
     click.echo("=" * 80)
     for scale in scales:
         click.echo(f"\n{scale.upper()}")
@@ -105,7 +105,7 @@ def list_options():
     click.echo("\n" + "=" * 80)
     click.echo("ORGANIZATIONS")
     click.echo("=" * 80)
-    for org in orgs:
+    for org in org_names:
         click.echo(f"  - {org}")
 
     click.echo()

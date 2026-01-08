@@ -4,7 +4,7 @@ import pytest
 from pathlib import Path
 from myimpact.assembler import (
     load_culture_csv,
-    load_org_themes,
+    load_org_focus_areas,
     load_system_prompt,
     extract_levels_from_csv,
     extract_culture_for_level,
@@ -39,17 +39,17 @@ class TestResourceLoading:
         with pytest.raises(FileNotFoundError):
             load_culture_csv("invalid_scale")
 
-    def test_load_org_themes_demo(self):
-        """Test loading demo org themes."""
-        themes = load_org_themes("demo")
+    def test_load_org_focus_areas_demo(self):
+        """Test loading demo org focus areas."""
+        themes = load_org_focus_areas("demo")
         assert isinstance(themes, str)
         assert len(themes) > 0
         # Demo file may or may not have markdown headers, just check it loads
 
-    def test_load_org_themes_invalid(self):
+    def test_load_org_focus_areas_invalid(self):
         """Test that loading invalid org raises FileNotFoundError."""
         with pytest.raises(FileNotFoundError):
-            load_org_themes("nonexistent_org")
+            load_org_focus_areas("nonexistent_org")
 
     def test_load_system_prompt(self):
         """Test loading system prompt."""

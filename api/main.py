@@ -1,50 +1,26 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import Optional
-import os
-
-# Make project root importable
-import sys
-from pathlib import Path
-
-ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
 
 from myimpact.assembler import (
     assemble_prompt,
-    discover_scales,
     discover_levels,
     discover_orgs,
-    load_org_themes,
+    discover_scales,
+    load_org_focus_areas,
 )
-
-# Azure OpenAI (optional)
-AOAI_ENABLED = bool(
-    os.getenv("AZURE_OPENAI_ENDPOINT")
-    and os.getenv("AZURE_OPENAI_API_KEY")
-    and os.getenv("AZURE_OPENAI_DEPLOYMENT")
-)
-client = None
-if AOAI_ENABLED:
-    try:
-        from openai import AzureOpenAI
-
-        client = AzureOpenAI(
-            api_key=os.environ.get("AZURE_OPENAI_API_KEY"),
-            api_version=os.environ.get("AZURE_OPENAI_API_VERSION", "2024-08-01-preview"),
-            azure_endpoint=os.environ.get("AZURE_OPENAI_ENDPOINT"),
-        )
-    except Exception:
-        AOAI_ENABLED = False
 
 app = FastAPI(
     title="MyImpact API",
+    description="Generate culture- and level-aligned prompts for quarterly SMART goal creation",
     version="0.1.0",
-    description="Generate SMART goal prompts aligned to culture, Radford levels, and org themes. "
-    "Primary mode: Returns prompts for users to paste into their LLM of choice. "
-    "Optional: Direct Azure OpenAI integration if credentials configured.",
+    contact={
+        "name": "MyImpact Team",
+    },
+    license_info={
+        "name": "MIT",
+    },
 )
 
 # Add CORS middleware to allow frontend requests
@@ -64,83 +40,63 @@ app.add_middleware(
 
 
 class GenerateRequest(BaseModel):
-    scale: str = Field(..., examples=["technical", "leadership"])
-    level: str = Field(..., examples=["L30", "L80"])
-    growth_intensity: str = Field(..., examples=["minimal", "moderate", "aggressive"])
-    org: str = Field("demo", examples=["demo"])
-    theme: Optional[str] = Field(None, description="Optional strategic theme bias")
-    goal_style: str = Field("independent", examples=["independent", "progressive"])
+    """Request model for prompt generation."""
+
+    scale: str = Field(..., description="Scale/track", examples=["technical", "leadership"])
+    level: str = Field(..., description="Job level label", examples=["L30–35 (Career)"])
+    growth_intensity: str = Field(
+        ..., description="Growth intensity", examples=["minimal", "moderate", "aggressive"]
+    )
+    org: str = Field("demo", description="Organization name", examples=["demo"])
+    theme: Optional[str] = Field(None, description="Optional emphasis / focus theme")
+    goal_style: str = Field(
+        "independent", description="Goal style", examples=["independent", "progressive"]
+    )
 
 
-@app.get("/api/metadata")
-def get_metadata():
-    """Get metadata for dropdowns and form options."""
+# Endpoints
+@app.get("/api/health", tags=["Monitoring"])
+async def health_check():
+    return {"status": "healthy", "version": app.version}
+
+
+@app.get("/api/metadata", tags=["Metadata"])
+async def metadata():
+    scales = discover_scales()
+    levels = {scale: discover_levels(scale) for scale in scales}
     return {
-        "scales": discover_scales(),
-        "levels": {s: discover_levels(s) for s in discover_scales()},
+        "scales": scales,
+        "levels": levels,
         "growth_intensities": ["minimal", "moderate", "aggressive"],
         "goal_styles": ["independent", "progressive"],
         "organizations": discover_orgs(),
     }
 
 
-@app.get("/api/orgs/{org_name}/themes")
-def get_org_themes(org_name: str):
-    """Get full org themes content for display."""
+@app.get("/api/orgs/{org_name}/focus-areas", tags=["Metadata"])
+async def get_org_focus_areas(org_name: str):
+    """Get strategic focus areas for an organization."""
     try:
-        themes_content = load_org_themes(org_name)
-        return {"org": org_name, "content": themes_content}
+        content = load_org_focus_areas(org_name)
+        return {"content": content}
     except FileNotFoundError:
-        raise HTTPException(status_code=404, detail=f"Org themes not found for '{org_name}'")
+        return {"content": None}
 
 
-@app.get("/api/health")
-def health_check():
-    """Health check endpoint for deployment monitoring."""
-    return {"status": "healthy", "version": "0.1.0"}
-
-
-@app.post("/api/goals/generate")
-def generate_goals(payload: GenerateRequest):
-    """
-    Generate goal prompts for the specified context.
-
-    **Primary Use**: Returns crafted prompts (system + user) for copying into any LLM.
-
-    **Optional Azure OpenAI**: If AZURE_OPENAI_ENDPOINT configured, also returns
-    LLM-generated goals in the 'result' field. Otherwise, 'result' is null.
-    """
-    # Assemble prompts
+@app.post("/api/goals/generate", tags=["Goals"])
+async def generate_prompts(request: GenerateRequest):
     system_prompt, user_context = assemble_prompt(
-        payload.scale,
-        payload.level,
-        payload.growth_intensity,
-        payload.org,
-        payload.theme,
-        payload.goal_style,
+        scale=request.scale,
+        level=request.level,
+        growth_intensity=request.growth_intensity,
+        org_name=request.org,
+        theme=request.theme,
+        goal_style=request.goal_style,
     )
 
-    result_text = None
-
-    if AOAI_ENABLED and client is not None:
-        try:
-            # Higher temperature for creativity per MVP
-            completion = client.chat.completions.create(
-                model=os.environ["AZURE_OPENAI_DEPLOYMENT"],
-                temperature=float(os.getenv("GEN_TEMPERATURE", 0.9)),
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_context},
-                ],
-            )
-            result_text = completion.choices[0].message.content
-        except Exception as e:
-            # Fallback to returning prompts if AOAI call fails
-            raise HTTPException(status_code=502, detail=f"Azure OpenAI error: {e}")
-
     return {
-        "inputs": payload.model_dump(),
-        "prompts": [system_prompt, user_context],  # Return as list, not tuple
-        "result": result_text,  # May be None if AOAI isn't configured
-        "powered_by": "Azure OpenAI" if AOAI_ENABLED else "prompts-only",
+        "inputs": request.model_dump(),
+        "prompts": [system_prompt, user_context],
+        "result": None,
+        "powered_by": "prompts-only",
     }

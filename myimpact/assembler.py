@@ -1,4 +1,4 @@
-"""Prompt assembler: loads culture CSVs, org themes, and system prompt to generate LLM context."""
+"""Prompt assembler: loads culture CSVs, org focus areas, and system prompt to generate LLM context."""
 
 import csv
 import os
@@ -35,15 +35,15 @@ def load_culture_csv(scale: str) -> dict:
     return culture
 
 
-def load_org_themes(org_name: str) -> str:
-    """Load org themes markdown file."""
+def load_org_focus_areas(org_name: str) -> str:
+    """Load org focus areas markdown file."""
     prompts_dir = _get_resource_dir("prompts")
-    theme_path = prompts_dir / f"org_themes_{org_name}.md"
+    focus_areas_path = prompts_dir / f"org_focus_areas_{org_name}.md"
 
-    if not theme_path.exists():
-        raise FileNotFoundError(f"Org themes file not found: {theme_path}")
+    if not focus_areas_path.exists():
+        raise FileNotFoundError(f"Org focus areas file not found: {focus_areas_path}")
 
-    with open(theme_path, "r", encoding="utf-8") as f:
+    with open(focus_areas_path, "r", encoding="utf-8") as f:
         return f.read()
 
 
@@ -59,28 +59,46 @@ def load_system_prompt() -> str:
         return f.read()
 
 
-def discover_scales() -> list:
-    """Discover available scales from culture_expectations_*.csv files."""
-    data_dir = _get_resource_dir("data")
+def discover_scales() -> list[str]:
+    """
+    Discover available scales based on CSV files in data directory.
+    Returns list of scale names (e.g. ['technical', 'leadership']).
+    """
+    data_dir = Path(__file__).parent.parent / "data"
     scales = []
     for file in data_dir.glob("culture_expectations_*.csv"):
-        scale = file.stem.replace("culture_expectations_", "")
-        scales.append(scale)
+        scale_name = file.stem.replace("culture_expectations_", "")
+        scales.append(scale_name)
     return sorted(scales)
 
 
+def discover_levels() -> dict[str, list[str]]:
+    """
+    Discover available levels for each scale.
+    Returns a dictionary mapping scale names to lists of level strings.
+    """
+    scales = discover_scales()
+    levels = {}
+    for scale in scales:
+        try:
+            levels[scale] = extract_levels_from_csv(scale)
+        except FileNotFoundError:
+            levels[scale] = []
+    return levels
+
+
 def discover_orgs() -> list:
-    """Discover available organizations from org_themes_*.md files."""
+    """Discover available organizations from org_focus_areas_*.md files."""
     prompts_dir = _get_resource_dir("prompts")
     org_names = []
-    for file in prompts_dir.glob("org_themes_*.md"):
-        org_name = file.stem.replace("org_themes_", "")
+    for file in prompts_dir.glob("org_focus_areas_*.md"):
+        org_name = file.stem.replace("org_focus_areas_", "")
         org_names.append(org_name)
     return sorted(org_names)
 
 
 def extract_levels_from_csv(scale: str) -> list:
-    """Extract available Radford levels from CSV column headers."""
+    """Extract available job levels from CSV column headers."""
     culture = load_culture_csv(scale)
     if not culture:
         return []
@@ -144,11 +162,11 @@ def assemble_prompt(
         [f"- **{attr}**: {expectation}" for attr, expectation in culture.items()]
     )
 
-    # Load full org themes content (all strategic focus areas)
+    # Load full org focus areas content (all strategic focus areas)
     try:
-        org_themes_full = load_org_themes(org_name)
+        org_focus_areas_full = load_org_focus_areas(org_name)
     except FileNotFoundError:
-        org_themes_full = ""
+        org_focus_areas_full = ""
 
     # User-specified focus (optional emphasis on top of full org context)
     user_focus = theme.strip() if theme else ""
@@ -164,7 +182,7 @@ def assemble_prompt(
 ## Context for Goal Generation
 
 **Scale/Track**: {scale.capitalize()}
-**Radford Level**: {level}
+**Job Level**: {level}
 **Growth Intensity**: {growth_intensity}
 **Goal Style**: {goal_style}
 **Organization**: {org_name}
@@ -180,16 +198,16 @@ def assemble_prompt(
 """
 
     # Always include full organizational context
-    if org_themes_full:
+    if org_focus_areas_full:
         user_context += f"""
 ### Organizational Strategic Focus Areas
-{org_themes_full}
+{org_focus_areas_full}
 """
 
     # Add user-specified focus if provided
     if user_focus:
         user_context += f"""
-### User-Specified Focus
+### Your Focus Areas
 The user wants to emphasize the following areas or themes:
 {user_focus}
 """
@@ -198,7 +216,7 @@ The user wants to emphasize the following areas or themes:
 ### Your Task
 Generate quarterly career goals that:
 1. Demonstrate progress toward the cultural principles above.
-2. Meet the Radford level expectations.
+2. Meet the job level expectations.
 3. Include a rationale connecting each goal to the cultural principles and level expectations.
 4. Follow the goal style (independent or progressive).
 5. Respect the growth intensity band.

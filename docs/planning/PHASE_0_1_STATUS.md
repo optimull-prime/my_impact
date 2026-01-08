@@ -26,8 +26,8 @@
 - [x] Goal rationale requirement (2-3 sentences connecting culture + level + theme)
 
 #### 2. Curated Data Files ✅
-- [x] `data/culture_expectations_technical.csv` (6 Radford levels × 8 cultural attributes)
-- [x] `data/culture_expectations_leadership.csv` (4 Radford levels × 8 cultural attributes)
+- [x] `data/culture_expectations_technical.csv` (6 job levels × 8 cultural attributes)
+- [x] `data/culture_expectations_leadership.csv` (4 job levels × 8 cultural attributes)
 - [x] `prompts/org_themes_demo.md` (sample org themes)
 - [x] `prompts/goal_generation_system_prompt.txt` (externalized system prompt)
 
