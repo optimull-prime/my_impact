@@ -44,28 +44,28 @@ def main():
 @click.argument("level", type=str)
 @click.argument("growth_intensity", type=click.Choice(GROWTH_INTENSITIES))
 @click.option("--org", default="demo", help="Organization name (default: demo)")
-@click.option("--theme", default=None, help="Strategic theme to bias goal generation")
+@click.option("--focus_area", default=None, help="Strategic focus area to bias goal generation")
 @click.option(
     "--goal-style",
     type=click.Choice(GOAL_STYLES),
     default="independent",
     help="Goal generation style",
 )
-def generate(scale, level, growth_intensity, org, theme, goal_style):
+def generate(scale, level, growth_intensity, org, focus_area, goal_style):
     """Generate a prompt for goal creation."""
     try:
-        system_prompt, user_prompt = assemble_prompt(
+        framework_prompt, user_prompt = assemble_prompt(
             scale=scale,
             level=level,
             growth_intensity=growth_intensity,
             org_name=org,
-            theme=theme,
+            focus_area=focus_area,
             goal_style=goal_style,
         )
         click.echo("=" * 80)
-        click.echo("SYSTEM PROMPT")
+        click.echo("GOAL FRAMEWORK")
         click.echo("=" * 80)
-        click.echo(system_prompt)
+        click.echo(framework_prompt)
         click.echo("\n" + "=" * 80)
         click.echo("USER CONTEXT")
         click.echo("=" * 80)

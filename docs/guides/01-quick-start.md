@@ -86,7 +86,7 @@ You should see the MyImpact landing page! 🎉
 
 2. **Watch the loading spinner** appear while the API processes
 
-3. **View the results** - Two collapsible sections with system prompt and user context
+3. **View the results** - Two collapsible sections with goal framework prompt and user context
 
 4. **Copy buttons** - Click to copy prompts to clipboard
 

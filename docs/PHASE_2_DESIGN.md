@@ -6,7 +6,7 @@ Phase 2 delivers a demo-ready static web application for **MyImpact** that gener
 
 ## Goals
 
-1. **Demonstrate Value**: Show how MyImpact generates context-rich prompts aligned to culture, job levels, and org themes
+1. **Demonstrate Value**: Show how MyImpact generates context-rich prompts aligned to culture, job levels, and org focus areas
 2. **Prompt-First UX**: Emphasize the "copy to any LLM" workflow (ChatGPT, Claude, Gemini, etc.)
 3. **Azure-Hostable**: Deploy as a static site (Azure Static Web Apps preferred) with minimal hosting costs
 4. **Foundation for Growth**: Architecture supports future enhancements (LLM integration, persistence, auth)
@@ -71,8 +71,8 @@ webapp/
 - **Growth Intensity** (radio buttons): Minimal, Moderate, Aggressive
 - **Organization** (dropdown): Demo, [future: multiple orgs]
   - Populated from `GET /api/metadata`
-- **Theme** (optional text input): Strategic theme to bias generation
-  - Future: Could be dropdown from org themes
+- **Focus Area** (optional text input): Strategic focus areas to bias generation
+  - Future: Could be dropdown from org focus areas
 - **Goal Style** (radio buttons): 
   - Independent (6–9 standalone goals)
   - Progressive (4 quarterly goals building on each other)
@@ -82,9 +82,9 @@ webapp/
 - Form validation: Ensure required fields are filled
 
 #### 3. Results Display
-**System Prompt Section**:
-- Collapsible card showing full system prompt
-- "Copy System Prompt" button with clipboard icon
+**Framework Prompt Section**:
+- Collapsible card showing full goal framework prompt
+- "Copy Framework Prompt" button with clipboard icon
 - Token count display (optional, for LLM context awareness)
 
 **User Context Section**:
@@ -93,11 +93,11 @@ webapp/
   - Cultural attributes for that level
   - Growth intensity guidance
   - Goal style guidance
-  - Org themes (if provided)
+  - Org focus_areas (if provided)
 - "Copy User Context" button with clipboard icon
 
 **Quick Actions**:
-- "Copy Both Prompts" button (combines system + user with separator)
+- "Copy Both Prompts" button (combines framework + user with separator)
 - "Start Over" button to reset form and hide results
 - Success toast notification after successful copy
 
@@ -120,7 +120,7 @@ webapp/
    ↓
 2. Scrolls/clicks to form
    ↓
-3. Selects: Scale → Level → Intensity → Org → Theme (optional) → Goal Style
+3. Selects: Scale → Level → Intensity → Org → Focus Area (optional) → Goal Style
    ↓
 4. Clicks "Generate Prompt"
    ↓
@@ -128,7 +128,7 @@ webapp/
    ↓
 6. Results display with two collapsible sections
    ↓
-7. User clicks "Copy System Prompt" → Toast: "Copied!"
+7. User clicks "Copy Framework Prompt" → Toast: "Copied!"
    ↓
 8. User clicks "Copy User Context" → Toast: "Copied!"
    ↓
@@ -165,7 +165,7 @@ webapp/
 **Existing FastAPI Application** (`api/main.py`)
 - Already implements required endpoints:
   - `GET /api/metadata` → Returns scales, levels, intensities, styles, orgs
-  - `POST /api/goals/generate` → Returns (system_prompt, user_context) tuple
+  - `POST /api/goals/generate` → Returns (framework_prompt, user_context) tuple
 - **Required Updates**:
   - Add CORS middleware to allow frontend origin
   - Ensure prompts are returned in JSON-friendly format (strings, not files)
@@ -215,7 +215,7 @@ webapp/
   "level": "L30–35 (Career)",
   "growth_intensity": "moderate",
   "org": "demo",
-  "theme": "Increase Productivity",  // optional
+  "focus_area": "Increase Productivity",  // optional
   "goal_style": "independent"
 }
 ```
@@ -225,7 +225,7 @@ webapp/
 {
   "inputs": { /* echo of request */ },
   "prompts": [
-    "System prompt text here...",
+    "Framework prompt text here...",
     "User context text here..."
   ],
   "result": null,  // null in prompts-only mode
@@ -236,7 +236,7 @@ webapp/
 **Frontend Usage**:
 1. Collect form values
 2. Call `POST /api/goals/generate` with JSON payload
-3. Display `prompts[0]` as "System Prompt"
+3. Display `prompts[0]` as "Framework Prompt"
 4. Display `prompts[1]` as "User Context"
 5. Ignore `result` field (only used if Azure OpenAI is configured)
 
@@ -335,11 +335,11 @@ app.add_middleware(
 **Prompt Generation**:
 - ✅ "Generate Prompt" button calls backend API
 - ✅ Loading spinner during API call
-- ✅ Display system prompt in collapsible card
+- ✅ Display framework prompt in collapsible card
 - ✅ Display user context in collapsible card
 
 **Copy to Clipboard**:
-- ✅ "Copy System Prompt" button
+- ✅ "Copy framework Prompt" button
 - ✅ "Copy User Context" button
 - ✅ "Copy Both Prompts" button (combined)
 - ✅ Success notification after copy
@@ -391,9 +391,9 @@ app.add_middleware(
 
 **Phase 4: Admin Features**
 - 🔮 Admin UI for editing culture CSVs (rich text editor)
-- 🔮 Admin UI for managing org themes (markdown editor)
+- 🔮 Admin UI for managing org focus_areas (markdown editor)
 - 🔮 Preview changes before publishing
-- 🔮 Multi-tenant governance (different orgs see different themes)
+- 🔮 Multi-tenant governance (different orgs see different focus_areas)
 
 ## Success Metrics (Demo)
 

@@ -18,7 +18,7 @@ This build delivers a **complete, tested, production-ready MVP** for MyImpact Ph
 #### ✅ Frontend Web Application
 - **Location**: `webapp/` directory
 - **Landing Page**: Hero section, value propositions, CTA
-- **Input Form**: 6 parameters (scale, level, intensity, org, theme, goal style)
+- **Input Form**: 6 parameters (scale, level, intensity, org, focus area, goal style)
 - **Results Display**: Collapsible prompt sections
 - **Features**: Copy-to-clipboard, error handling, responsive design
 - **Tech Stack**: Vanilla HTML/CSS/JavaScript + Tailwind CSS CDN
@@ -55,7 +55,7 @@ This build delivers a **complete, tested, production-ready MVP** for MyImpact Ph
 | Landing page | ✅ | Hero, benefits, CTA |
 | Input form | ✅ | 6 fields, validation, dynamic dropdowns |
 | Prompt generation | ✅ | Works with all valid combinations |
-| Copy to clipboard | ✅ | System prompt, user context, both |
+| Copy to clipboard | ✅ | Goal framework prompt, user context, both |
 | Responsive design | ✅ | Mobile, tablet, desktop |
 | Error handling | ✅ | User-friendly messages |
 | CORS support | ✅ | Localhost + production |
@@ -187,8 +187,8 @@ api/
 │  │  └─ POST /api/goals/generate                        │   │
 │  │      └─ Uses: myimpact/assembler.py                 │   │
 │  │          ├─ Loads: data/*.csv (culture)             │   │
-│  │          ├─ Loads: prompts/*.md (org themes)        │   │
-│  │          └─ Returns: [system_prompt, user_context]  │   │
+│  │          ├─ Loads: prompts/*.md (org focus areas)   │   │
+│  │          └─ Returns: [framework_prompt, user_context]  │   │
 │  └──────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -210,7 +210,7 @@ api/
 1. **Show Landing Page** - Value propositions
 2. **Fill Form** - Select scale, level, intensity
 3. **Generate Prompt** - Show loading spinner
-4. **Display Results** - Collapsible system + user context
+4. **Display Results** - Collapsible goal framework + user context
 5. **Copy Prompts** - Show clipboard success toast
 6. **Paste to ChatGPT** - Show how user would use in LLM
 

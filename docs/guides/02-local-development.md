@@ -25,7 +25,7 @@ myimpact/
 │   ├── assembler.py             # Prompt assembly logic
 │   └── cli.py                   # CLI interface
 ├── data/                          # Culture CSVs
-├── prompts/                       # Org themes & system prompt
+├── prompts/                       # Org focus area & system prompt
 ├── Dockerfile                     # Container image
 └── pyproject.toml
 ```

@@ -11,7 +11,7 @@ import pytest
 from myimpact.assembler import (
     load_culture_csv,
     load_org_focus_areas,
-    load_system_prompt,
+    load_framework_prompt,
     extract_levels_from_csv,
     extract_culture_for_level,
     discover_scales,
@@ -70,13 +70,13 @@ class TestResourceLoadingIntegration:
         assert any(marker in content for marker in ["#", "-", "*"]), \
             "Should contain markdown formatting"
 
-    def test_load_system_prompt_returns_substantive_content(self):
+    def test_load_framework_prompt_returns_substantive_content(self):
         """
-        Given: System prompt file exists
-        When: load_system_prompt() is called
+        Given: Goal framework prompt file exists
+        When: load_framework_prompt() is called
         Then: Returns substantive prompt with key concepts
         """
-        prompt = load_system_prompt()
+        prompt = load_framework_prompt()
         
         assert isinstance(prompt, str)
         assert len(prompt) > 100, "Should be substantive prompt"
@@ -84,6 +84,20 @@ class TestResourceLoadingIntegration:
         prompt_lower = prompt.lower()
         assert any(term in prompt_lower for term in ["goal", "smart", "impact", "objective"]), \
             "Prompt should mention goals or objectives"
+
+    def test_load_framework_returns_substantive_content(self):
+        """
+        Given: Framework file exists
+        When: load_framework() is called
+        Then: Returns substantive text with key concepts
+        """
+        prompt = load_framework_prompt()
+
+        assert isinstance(prompt, str)
+        assert len(prompt) > 100, "Should be substantive prompt"
+        prompt_lower = prompt.lower()
+        assert any(term in prompt_lower for term in ["goal", "smart", "impact", "objective"]), \
+            "Framework should mention goals or objectives"
 
     def test_load_culture_csv_raises_for_missing_scale(self):
         """
@@ -260,7 +274,7 @@ class TestPromptAssemblyIntegration:
         """
         Given: Valid scale, level, intensity, org
         When: assemble_prompt() is called
-        Then: Returns tuple (system_prompt, user_prompt) both non-empty strings
+        Then: Returns tuple (framework_prompt, user_prompt) both non-empty strings
         """
         scales = discover_scales()
         orgs = discover_orgs()
@@ -269,7 +283,7 @@ class TestPromptAssemblyIntegration:
         scale = scales[0]
         level = extract_levels_from_csv(scale)[0]
         
-        system, user = assemble_prompt(
+        framework, user = assemble_prompt(
             scale=scale,
             level=level,
             growth_intensity="moderate",
@@ -277,7 +291,7 @@ class TestPromptAssemblyIntegration:
             goal_style="independent"
         )
         
-        assert isinstance(system, str) and len(system) > 0
+        assert isinstance(framework, str) and len(framework) > 0
         assert isinstance(user, str) and len(user) > 0
 
     def test_assemble_prompt_includes_user_context(self):
@@ -290,7 +304,7 @@ class TestPromptAssemblyIntegration:
         scale = scales[0]
         level = extract_levels_from_csv(scale)[0]
         
-        system, user = assemble_prompt(
+        framework, user = assemble_prompt(
             scale=scale,
             level=level,
             growth_intensity="aggressive",
@@ -302,48 +316,48 @@ class TestPromptAssemblyIntegration:
         assert "aggressive" in user.lower(), "User prompt should reference intensity"
         assert "progressive" in user.lower(), "User prompt should reference goal style"
 
-    def test_assemble_prompt_with_theme_includes_theme_context(self):
+    def test_assemble_prompt_with_focus_area_includes_focus_area_context(self):
         """
-        Given: assemble_prompt() called with optional theme
-        When: theme is 'Innovation & Quality'
-        Then: User prompt includes theme context
+        Given: assemble_prompt() called with optional focus area
+        When: focus area is 'Innovation & Quality'
+        Then: User prompt includes focus area context
         """
         scales = discover_scales()
         scale = scales[0]
         level = extract_levels_from_csv(scale)[0]
         
-        system, user = assemble_prompt(
+        framework, user = assemble_prompt(
             scale=scale,
             level=level,
             growth_intensity="moderate",
             org_name="demo",
-            theme="Innovation & Quality",
+            focus_area="Innovation & Quality",
             goal_style="independent"
         )
         
-        assert len(user) > 100, "Theme context should make prompt more substantive"
-        # Theme should be referenced (at least indirectly)
+        assert len(user) > 100, "Focus area context should make prompt more substantive"
+        # Focus area should be referenced (at least indirectly)
         assert any(word in user.lower() for word in ["innovation", "quality"]), \
-            "Prompt should incorporate theme concepts"
+            "Prompt should incorporate focus area concepts"
 
-    def test_assemble_prompt_without_theme_still_succeeds(self):
+    def test_assemble_prompt_without_focus_area_still_succeeds(self):
         """
-        Given: assemble_prompt() called without theme parameter
-        When: theme is None (optional)
+        Given: assemble_prompt() called without focus area parameter
+        When: focus area is None (optional)
         Then: Still returns valid prompts
         """
         scales = discover_scales()
         scale = scales[0]
         level = extract_levels_from_csv(scale)[0]
         
-        system, user = assemble_prompt(
+        framework, user = assemble_prompt(
             scale=scale,
             level=level,
             growth_intensity="moderate",
             org_name="demo"
         )
         
-        assert isinstance(system, str) and len(system) > 0
+        assert isinstance(framework, str) and len(framework) > 0
         assert isinstance(user, str) and len(user) > 0
 
     def test_assemble_prompt_raises_for_invalid_level(self):

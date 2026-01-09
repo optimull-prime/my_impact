@@ -7,7 +7,7 @@ AI-ready quarterly goal generation aligned to company culture, job level expecta
 **MyImpact** generates context-rich prompts to help employees create quarterly SMART goals aligned to:
 - **Company cultural principles** (8 attributes: humble, hardworking, continuous learner, world-class, transparency, improvement, respect, ownership)
 - **Level expectations** (technical L10–L35+, leadership L70–L100+)
-- **Organizational themes** (strategic priorities, focus areas, org level context)
+- **Focus areas** (strategic priorities, focus areas, org level context)
 
 The primary use case is **generating prompts to copy into any LLM** (ChatGPT, Claude, Gemini, etc.) for personalized goal generation.
 

@@ -187,10 +187,10 @@
 
                 <!-- Your Focus Areas (Optional - User Customization) -->
                 <div>
-                    <label for="theme" class="block text-sm font-semibold text-gray-700 mb-2">Your Focus Areas <span
+                    <label for="focus_area" class="block text-sm font-semibold text-gray-700 mb-2">Your Focus Areas <span
                             class="text-gray-400 font-normal">(optional)</span></label>
-                    <textarea id="theme" rows="6"
-                        placeholder="Add any additional focus areas or emphasis here.  Examples:&#10;- Master a core programming language, cloud platform, or system architecture&#10;- Improve problem-solving and quality: write more maintainable code, improve testing practices, reduce production defects&#10;- Strengthen soft skills: communicate technical concepts to non-technical stakeholders, mentor teammates, collaborate more effectively&#10;- Build career scalability: develop leadership skills, improve system design thinking, estimate and deliver projects more effectively"
+                    <textarea id="focus_area" rows="6"
+                        placeholder="What should your goals emphasize?&#10;- Strengths to leverage (e.g., mentoring, ownership, influence)&#10;- Opportunities to improve (e.g., communication, planning, quality)&#10;- Gaps to explore (e.g., customer empathy, stakeholder alignment, cross-team delivery)&#10;- Level up your impact (e.g., larger scope, clearer alignment, more reliable delivery)"
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-sans resize-y"></textarea>
                     <p class="text-xs text-gray-500 mt-1">💡 Optional: Add specific areas you want to emphasize or
                         challenges you're focusing on</p>
@@ -273,10 +273,10 @@
                         <span class="text-xs text-gray-500">Read-only</span>
                     </button>
                     <div class="hidden p-6 max-h-64 overflow-y-auto">
-                        <div id="system-prompt-content"
+                        <div id="framework-prompt-content"
                             class="text-sm text-gray-700 whitespace-pre-wrap font-mono bg-gray-50 p-4 rounded border border-gray-200">
                         </div>
-                        <button type="button" onclick="copyPrompt('system')"
+                        <button type="button" onclick="copyPrompt('framework')"
                             class="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded transition">
                             Copy Goal Framework
                         </button>

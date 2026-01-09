@@ -48,7 +48,7 @@ class GenerateRequest(BaseModel):
         ..., description="Growth intensity", examples=["minimal", "moderate", "aggressive"]
     )
     org: str = Field("demo", description="Organization name", examples=["demo"])
-    theme: Optional[str] = Field(None, description="Optional emphasis / focus theme")
+    focus_area: Optional[str] = Field(None, description="Optional emphasis / focus areas")
     goal_style: str = Field(
         "independent", description="Goal style", examples=["independent", "progressive"]
     )
@@ -87,13 +87,13 @@ async def get_org_focus_areas(org_name: str):
 async def generate_prompts(request: GenerateRequest):
     """Generate goal-setting prompts"""
     try:
-        system_prompt, user_context = assemble_prompt(
+        framework_prompt, user_context = assemble_prompt(
             scale=request.scale,
             level=request.level,
             growth_intensity=request.growth_intensity,
             org_name=request.org or "demo",
             goal_style=request.goal_style or "independent",
-            theme=request.theme or None,
+            focus_area=request.focus_area or None,
         )
 
         return {
@@ -103,9 +103,11 @@ async def generate_prompts(request: GenerateRequest):
                 "growth_intensity": request.growth_intensity,
                 "org": request.org or "demo",
                 "goal_style": request.goal_style or "independent",
-                "theme": request.theme,
+                "focus_area": request.focus_area,
             },
-            "prompts": [system_prompt, user_context],
+            "prompts": [framework_prompt, user_context],
+            "framework": framework_prompt,
+            "user_context": user_context,
             "result": None,
         }
     except FileNotFoundError as e:

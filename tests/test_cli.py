@@ -32,7 +32,7 @@ class TestCLIGenerateCommand:
         When: Invoked with valid arguments
         Then: Succeeds and calls assembler with correct parameters
         """
-        mock_assemble.return_value = ("system prompt", "user prompt")
+        mock_assemble.return_value = ("framework prompt", "user prompt")
         
         result = self.runner.invoke(main, [
             "generate",
@@ -45,25 +45,25 @@ class TestCLIGenerateCommand:
         assert mock_assemble.called
 
     @patch('myimpact.cli.assemble_prompt')
-    def test_generate_command_outputs_system_and_user_prompts(self, mock_assemble):
+    def test_generate_command_outputs_framework_and_user_prompts(self, mock_assemble):
         """
         Given: Valid generate arguments
         When: Command executes
-        Then: Output includes both SYSTEM PROMPT and USER CONTEXT sections
+        Then: Output includes both GOAL FRAMEWORK and USER CONTEXT sections
         """
-        mock_assemble.return_value = ("system content", "user content")
-        
+        mock_assemble.return_value = ("framework content", "user content")
+
         result = self.runner.invoke(main, [
             "generate",
             "technical",
             "L30",
             "moderate"
         ])
-        
+
         assert result.exit_code == 0
-        assert "SYSTEM PROMPT" in result.output
+        assert "GOAL FRAMEWORK" in result.output
         assert "USER CONTEXT" in result.output
-        assert "system content" in result.output
+        assert "framework content" in result.output
         assert "user content" in result.output
 
     @patch('myimpact.cli.assemble_prompt')
@@ -81,7 +81,7 @@ class TestCLIGenerateCommand:
             "L50",
             "aggressive",
             "--org", "acme",
-            "--theme", "Quality First",
+            "--focus_area", "Quality First",
             "--goal-style", "progressive"
         ])
         
@@ -91,7 +91,7 @@ class TestCLIGenerateCommand:
             level="L50",
             growth_intensity="aggressive",
             org_name="acme",
-            theme="Quality First",
+            focus_area="Quality First",
             goal_style="progressive"
         )
 
@@ -289,7 +289,7 @@ class TestCLIGenerateIntegration:
         """
         Given: Valid generate arguments with real data
         When: Command executes
-        Then: Output includes both SYSTEM PROMPT and USER CONTEXT
+        Then: Output includes both GOAL FRAMEWORK and USER CONTEXT
         """
         if not self.scales:
             pytest.skip("No scales discovered")
@@ -306,7 +306,7 @@ class TestCLIGenerateIntegration:
             "moderate"
         ])
         
-        assert "SYSTEM PROMPT" in result.output
+        assert "GOAL FRAMEWORK" in result.output
         assert "USER CONTEXT" in result.output
 
     def test_generate_output_references_level_and_intensity(self):

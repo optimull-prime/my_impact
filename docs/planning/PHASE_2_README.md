@@ -6,7 +6,7 @@
 
 ## What is MyImpact?
 
-MyImpact is a web application that generates personalized, **culture-aligned career goals**. Users input their context (level, intensity, org themes) and receive carefully crafted prompts to paste into any LLM (ChatGPT, Claude, Gemini, etc.)—then get high-quality goals tailored to their company's culture and expectations.
+MyImpact is a web application that generates personalized, **culture-aligned career goals**. Users input their context (level, intensity, org focus areas) and receive carefully crafted prompts to paste into any LLM (ChatGPT, Claude, Gemini, etc.)—then get high-quality goals tailored to their company's culture and expectations.
 
 ## Key Features (Phase 2 MVP)
 
@@ -63,9 +63,9 @@ Visit `http://localhost:8080` in your browser.
 ### User Journey
 
 1. **Land on page** → See hero section with value propositions
-2. **Fill form** → Select scale, level, intensity, org, theme, style
+2. **Fill form** → Select scale, level, intensity, org, focus area, style
 3. **Click "Generate"** → System makes API call to backend
-4. **View prompts** → System prompt + User context shown in collapsible cards
+4. **View prompts** → framework prompt + User context shown in collapsible cards
 5. **Copy prompts** → Click buttons to copy to clipboard
 6. **Paste into LLM** → Open ChatGPT/Claude/Gemini, paste prompts, get goals
 
@@ -79,9 +79,9 @@ Frontend (Static Web App)          Backend (FastAPI)
   ↓                              assemble_prompt()
   Vanilla JS, no build           ↓
   ↓                              Load culture CSVs
-  HTTPS requests                 Load org themes
-  (CORS enabled)                 Load system prompt
-                                 Return [system, user]
+  HTTPS requests                 Load org focus areas
+  (CORS enabled)                 Load framework prompt
+                                 Return [framework, user]
 ```
 
 ## Project Structure
@@ -102,9 +102,9 @@ Frontend (Static Web App)          Backend (FastAPI)
 │   ├── culture_expectations_technical.csv
 │   └── culture_expectations_leadership.csv
 ├── prompts/
-│   ├── org_themes_demo.md
-│   ├── org_themes_hc.md
-│   └── goal_generation_system_prompt.txt
+│   ├── org_focus_areas_demo.md
+│   ├── org_focus_areas_hc.md
+│   └── goal_generation_framework_prompt.txt
 ├── tests/
 │   ├── test_api.py
 │   ├── test_assembler.py
@@ -143,7 +143,7 @@ Generates goal prompts based on user inputs.
   "level": "L30–35 (Career)",
   "growth_intensity": "moderate",
   "org": "demo",
-  "theme": "Cloud Migration",
+  "focus_area": "Cloud Migration",
   "goal_style": "independent"
 }
 ```
@@ -153,7 +153,7 @@ Generates goal prompts based on user inputs.
 {
   "inputs": { ... },
   "prompts": [
-    "System prompt text...",
+    "Goal framework prompt text...",
     "User context text..."
   ],
   "result": null,
@@ -250,10 +250,10 @@ Org-specific focus areas (Markdown files):
 
 Include strategic focus areas and context relevant to the organization.
 
-### System Prompt
+### Goal Framework Prompt
 
-Base system prompt for goal generation:
-- `prompts/goal_generation_system_prompt.txt`
+Base framork prompt for goal generation:
+- `prompts/goal_generation_framework_prompt.txt`
 
 Used for all goal generation requests.
 
@@ -340,7 +340,7 @@ See `LOCAL_DEVELOPMENT.md` for detailed troubleshooting.
 
 🔮 **Admin Features**
 - Edit culture CSVs via web UI
-- Manage org themes
+- Manage org focus areas
 - Preview changes before publishing
 
 🔮 **Analytics**

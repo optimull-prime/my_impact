@@ -132,10 +132,10 @@ class TestAPIGenerateEndpoint:
         """
         Given: Valid generate request payload
         When: POST /api/goals/generate
-        Then: Returns 200 with system and user prompts
+        Then: Returns 200 with framework and user prompts
         """
         # Arrange
-        mock_assemble.return_value = ("System: context", "User: task")
+        mock_assemble.return_value = ("Framework: context", "User: task")
         
         payload = {
             "scale": "technical",
@@ -152,7 +152,7 @@ class TestAPIGenerateEndpoint:
         assert response.status_code == 200
         data = response.json()
         assert "prompts" in data
-        assert data["prompts"] == ["System: context", "User: task"]
+        assert data["prompts"] == ["Framework: context", "User: task"]
 
     @patch('api.main.assemble_prompt')
     def test_generate_returns_all_required_response_fields(self, mock_assemble):
@@ -192,7 +192,7 @@ class TestAPIGenerateEndpoint:
             "level": "L50",
             "growth_intensity": "aggressive",
             "org": "acme",
-            "theme": "Strategic Vision",
+            "focus_area": "Strategic Vision",
             "goal_style": "progressive"
         }
         
@@ -204,7 +204,7 @@ class TestAPIGenerateEndpoint:
         assert inputs["level"] == "L50"
         assert inputs["growth_intensity"] == "aggressive"
         assert inputs["org"] == "acme"
-        assert inputs["theme"] == "Strategic Vision"
+        assert inputs["focus_area"] == "Strategic Vision"
         assert inputs["goal_style"] == "progressive"
 
     @patch('api.main.assemble_prompt')
@@ -221,7 +221,7 @@ class TestAPIGenerateEndpoint:
             "level": "L40",
             "growth_intensity": "minimal",
             "org": "demo",
-            "theme": "Quality First",
+            "focus_area": "Quality First",
             "goal_style": "progressive"
         }
         
@@ -233,7 +233,7 @@ class TestAPIGenerateEndpoint:
             level="L40",
             growth_intensity="minimal",
             org_name="demo",
-            theme="Quality First",
+            focus_area="Quality First",
             goal_style="progressive"
         )
 
@@ -283,11 +283,11 @@ class TestAPIGenerateEndpoint:
         assert response.status_code == 422
 
     @patch('api.main.assemble_prompt')
-    def test_generate_accepts_optional_theme_parameter(self, mock_assemble):
+    def test_generate_accepts_optional_focus_area_parameter(self, mock_assemble):
         """
-        Given: Generate request with optional theme
+        Given: Generate request with optional focus area
         When: POST /api/goals/generate
-        Then: Theme is passed to assembler
+        Then: Focus area is passed to assembler
         """
         mock_assemble.return_value = ("sys", "user")
         
@@ -296,15 +296,15 @@ class TestAPIGenerateEndpoint:
             "level": "L30",
             "growth_intensity": "moderate",
             "org": "demo",
-            "theme": "Innovation",
+            "focus_area": "Innovation",
             "goal_style": "independent"
         }
         
         self.client.post("/api/goals/generate", json=payload)
         
-        # Verify theme was passed
+        # Verify focus area was passed
         call_kwargs = mock_assemble.call_args[1]
-        assert call_kwargs["theme"] == "Innovation"
+        assert call_kwargs["focus_area"] == "Innovation"
 
     @patch('api.main.assemble_prompt')
     def test_generate_uses_demo_as_default_organization(self, mock_assemble):

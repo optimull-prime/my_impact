@@ -37,13 +37,13 @@ Add strategic focus areas as markdown bullet points or sections. These bias goal
 
 **Validation**: After editing, run:
 ```bash
-myimpact generate technical L30 moderate --org [orgname] --theme "Standardize for Speed and Interchangeability"
+myimpact generate technical L30 moderate --org [orgname] --focus_area "Standardize for Speed and Interchangeability"
 ```
 Verify that the focus area appears in the output.
 
-### System Prompt
+### Goal Framework Prompt
 
-**File**: `prompts/goal_generation_system_prompt.txt`
+**File**: `prompts/goal_generation_framework_prompt.txt`
 
 Adjust LLM behavior: emphasis on locus of control, goal style, rationale, etc.
 
@@ -61,7 +61,7 @@ Adjust LLM behavior: emphasis on locus of control, goal style, rationale, etc.
 
 1. Create `prompts/org_focus_areas_[neworg].md` with strategic focus areas.
 2. Run `myimpact list-options` to verify.
-3. Use in CLI: `myimpact generate ... --org [neworg] --theme "..."`
+3. Use in CLI: `myimpact generate ... --org [neworg] --focus_area "..."`
 
 ## Testing
 
