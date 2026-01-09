@@ -8,8 +8,6 @@ Following Martin Fowler's Test Shapes principles:
 """
 
 import pytest
-from pathlib import Path
-from unittest.mock import patch, mock_open
 from myimpact.assembler import (
     load_culture_csv,
     load_org_focus_areas,

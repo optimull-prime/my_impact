@@ -8,11 +8,10 @@ Following Martin Fowler's Test Shapes principles:
 """
 
 import pytest
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import patch
 from fastapi.testclient import TestClient
-from pydantic import ValidationError
 
-from api.main import app, GenerateRequest
+from api.main import app
 
 
 class TestAPIMetadataEndpoint:

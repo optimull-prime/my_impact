@@ -8,7 +8,7 @@ Following Martin Fowler's Test Shapes principles:
 """
 
 import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from click.testing import CliRunner
 from myimpact.cli import main, discover_org_names, discover_scales
 from myimpact.assembler import extract_levels_from_csv

@@ -243,8 +243,8 @@ async function copyPrompt(type) {
 function resetForm() {
     document.getElementById('prompt-form').reset();
     document.getElementById('results-section').classList.add('hidden');
-    document.getElementById('org-themes-container').classList.add('hidden');
-    document.getElementById('org-themes-display').value = '';
+    document.getElementById('org-focus-areas-container').classList.add('hidden');
+    document.getElementById('org-focus-areas-display').value = '';
     document.getElementById('full-prompt-preview').value = '';
     document.getElementById('level').innerHTML = '<option value="">Select your level...</option>';
     window.currentPrompts = null;
