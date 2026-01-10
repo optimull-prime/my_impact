@@ -85,7 +85,13 @@ async def get_org_focus_areas(org_name: str):
 
 @app.post("/api/goals/generate")
 async def generate_prompts(request: GenerateRequest):
-    """Generate goal-setting prompts"""
+    """Generate goal-setting prompts.
+    
+    Returns a JSON object containing:
+    - framework: The system/instruction prompt.
+    - user_context: The data-driven context for the specific user.
+    - powered_by: Indicates the generation engine ("prompts-only" for when copy only enabled).
+    """
     try:
         framework_prompt, user_context = assemble_prompt(
             scale=request.scale,
@@ -105,10 +111,11 @@ async def generate_prompts(request: GenerateRequest):
                 "goal_style": request.goal_style or "independent",
                 "focus_area": request.focus_area,
             },
-            "prompts": [framework_prompt, user_context],
+            # modern structured format
             "framework": framework_prompt,
             "user_context": user_context,
             "result": None,
+            "powered_by": "prompts-only",
         }
     except FileNotFoundError as e:
         raise HTTPException(

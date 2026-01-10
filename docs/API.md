@@ -29,7 +29,7 @@ Request body:
   "level": "L30",
   "growth_intensity": "moderate",
   "org": "demo",
-  "framework": "Standardize for Speed and Interchangeability",
+  "focus_area": "Standardize for Speed and Interchangeability",
   "goal_style": "independent"
 }
 ```
