@@ -21,11 +21,9 @@ from myimpact.assembler import (
 )
 
 
-# ============================================================================
-# INTEGRATION TESTS - Test assembler against real data files
-# ============================================================================
+@pytest.mark.integration
 class TestResourceLoadingIntegration:
-    """Test resource file loading with real files (integration tier)."""
+    """Test resource file loading with real files."""
 
     def test_load_culture_csv_technical_has_required_attributes(self):
         """
@@ -118,11 +116,9 @@ class TestResourceLoadingIntegration:
             load_org_focus_areas("nonexistent_org_xyz")
 
 
-# ============================================================================
-# UNIT TESTS - Test discovery and extraction logic
-# ============================================================================
+@pytest.mark.unit
 class TestDiscoveryFunctions:
-    """Test resource discovery functions (unit tier)."""
+    """Test resource discovery functions."""
 
     def test_discover_scales_returns_list_of_strings(self):
         """
@@ -191,8 +187,9 @@ class TestDiscoveryFunctions:
             assert len(level_list) > 0, f"Scale '{scale}' should have levels"
 
 
+@pytest.mark.unit
 class TestLevelExtraction:
-    """Test level extraction from CSV data (unit tier)."""
+    """Test level extraction from CSV data."""
 
     def test_extract_levels_from_csv_returns_list(self):
         """
@@ -264,11 +261,9 @@ class TestLevelExtraction:
             "All expectations should be non-empty strings"
 
 
-# ============================================================================
-# INTEGRATION TESTS - Test prompt assembly with real data
-# ============================================================================
+@pytest.mark.integration
 class TestPromptAssemblyIntegration:
-    """Test prompt assembly orchestration (integration tier)."""
+    """Test prompt assembly orchestration."""
 
     def test_assemble_prompt_returns_tuple_of_strings(self):
         """
@@ -376,11 +371,9 @@ class TestPromptAssemblyIntegration:
             )
 
 
-# ============================================================================
-# DATA INTEGRITY TESTS - Verify consistency and format compliance
-# ============================================================================
+@pytest.mark.smoke
 class TestDataIntegrity:
-    """Test data file integrity and format consistency (integration tier)."""
+    """Verify shipped demo data integrity and format consistency."""
 
     def test_csv_attributes_are_non_empty(self):
         """

@@ -14,15 +14,12 @@ from myimpact.cli import main, discover_org_names, discover_scales
 from myimpact.assembler import extract_levels_from_csv
 
 
-# ============================================================================
-# UNIT TESTS - Test CLI commands with mocked assembler
-# ============================================================================
+@pytest.mark.unit
 class TestCLIGenerateCommand:
-    """Test 'generate' command with mocked assembler (unit tier)."""
+    """Test 'generate' command with mocked assembler."""
 
     @pytest.fixture(autouse=True)
     def setup(self):
-        """Set up test fixtures."""
         self.runner = CliRunner()
 
     @patch('myimpact.cli.assemble_prompt')
@@ -196,8 +193,9 @@ class TestCLIGenerateCommand:
         assert call_kwargs["goal_style"] == "independent"
 
 
+@pytest.mark.unit
 class TestCLIListOptionsCommand:
-    """Test 'list-options' command (unit tier)."""
+    """Test 'list-options' command."""
 
     @pytest.fixture(autouse=True)
     def setup(self):
@@ -252,8 +250,9 @@ class TestCLIListOptionsCommand:
 # ============================================================================
 # INTEGRATION TESTS - Test CLI with real data
 # ============================================================================
+@pytest.mark.integration
 class TestCLIGenerateIntegration:
-    """Test 'generate' command with real assembler (integration tier)."""
+    """Test 'generate' command with real assembler."""
 
     @pytest.fixture(autouse=True)
     def setup(self):
@@ -362,8 +361,9 @@ class TestCLIGenerateIntegration:
 # ============================================================================
 # DISCOVERY FUNCTION TESTS
 # ============================================================================
+@pytest.mark.unit
 class TestCLIDiscoveryFunctions:
-    """Test CLI discovery helper functions (unit tier)."""
+    """Test CLI discovery helper functions."""
 
     def test_discover_org_names_returns_list(self):
         """
@@ -422,6 +422,7 @@ class TestCLIDiscoveryFunctions:
 # ============================================================================
 # CLI HELP AND DOCUMENTATION TESTS
 # ============================================================================
+@pytest.mark.unit
 class TestCLIHelp:
     """Test CLI help output and documentation."""
 

@@ -14,6 +14,7 @@ from fastapi.testclient import TestClient
 from api.main import app
 
 
+@pytest.mark.unit
 class TestAPIMetadataEndpoint:
     """Test /api/metadata endpoint - HTTP contract only."""
 
@@ -119,8 +120,9 @@ class TestAPIMetadataEndpoint:
         assert all(isinstance(o, str) for o in orgs)
 
 
+@pytest.mark.unit
 class TestAPIGenerateEndpoint:
-    """Test /api/goals/generate endpoint - Focus on HTTP contract and error handling."""
+    """Test /api/goals/generate endpoint - HTTP contract and error handling."""
 
     @pytest.fixture(autouse=True)
     def setup(self):
@@ -132,14 +134,14 @@ class TestAPIGenerateEndpoint:
         """
         Given: Valid generate request payload
         When: POST /api/goals/generate
-        Then: Returns 200 with framework and user prompts
+        Then: Returns 200 with framework and user_context prompts
         """
         # Arrange
         mock_assemble.return_value = ("Framework: context", "User: task")
         
         payload = {
-            "scale": "technical",
-            "level": "L30",
+            "scale": "individual_contributor_technical",
+            "level": "L30–35 (Career)",
             "growth_intensity": "moderate",
             "org": "demo",
             "goal_style": "independent"
@@ -151,15 +153,18 @@ class TestAPIGenerateEndpoint:
         # Assert
         assert response.status_code == 200
         data = response.json()
-        assert "prompts" in data
-        assert data["prompts"] == ["Framework: context", "User: task"]
+        assert "framework" in data
+        assert "user_context" in data
+        assert data["framework"] == "Framework: context"
+        assert data["user_context"] == "User: task"
+        assert data["powered_by"] == "prompts-only"
 
     @patch('api.main.assemble_prompt')
     def test_generate_returns_all_required_response_fields(self, mock_assemble):
         """
         Given: Valid generate request
         When: POST /api/goals/generate
-        Then: Response includes inputs, prompts, result
+        Then: Response includes inputs, framework, user_context, result, powered_by
         """
         mock_assemble.return_value = ("sys", "user")
         
@@ -174,7 +179,7 @@ class TestAPIGenerateEndpoint:
         response = self.client.post("/api/goals/generate", json=payload)
         data = response.json()
         
-        required_fields = {"inputs", "prompts", "result"}
+        required_fields = {"inputs", "framework", "user_context", "result", "powered_by"}
         assert required_fields.issubset(data.keys()), \
             f"Missing fields: {required_fields - set(data.keys())}"
 
@@ -188,10 +193,10 @@ class TestAPIGenerateEndpoint:
         mock_assemble.return_value = ("sys", "user")
         
         payload = {
-            "scale": "leadership",
-            "level": "L50",
+            "scale": "people_manager",
+            "level": "L50–55 (Expert)",
             "growth_intensity": "aggressive",
-            "org": "acme",
+            "org": "demo",
             "focus_area": "Strategic Vision",
             "goal_style": "progressive"
         }
@@ -200,10 +205,10 @@ class TestAPIGenerateEndpoint:
         inputs = response.json()["inputs"]
         
         # Verify exact echo
-        assert inputs["scale"] == "leadership"
-        assert inputs["level"] == "L50"
+        assert inputs["scale"] == "people_manager"
+        assert inputs["level"] == "L50–55 (Expert)"
         assert inputs["growth_intensity"] == "aggressive"
-        assert inputs["org"] == "acme"
+        assert inputs["org"] == "demo"
         assert inputs["focus_area"] == "Strategic Vision"
         assert inputs["goal_style"] == "progressive"
 
@@ -217,8 +222,8 @@ class TestAPIGenerateEndpoint:
         mock_assemble.return_value = ("sys", "user")
         
         payload = {
-            "scale": "technical",
-            "level": "L40",
+            "scale": "individual_contributor_technical",
+            "level": "L40–45 (Advanced)",
             "growth_intensity": "minimal",
             "org": "demo",
             "focus_area": "Quality First",
@@ -229,8 +234,8 @@ class TestAPIGenerateEndpoint:
         
         # Verify assembler was called with exact parameters
         mock_assemble.assert_called_once_with(
-            scale="technical",
-            level="L40",
+            scale="individual_contributor_technical",
+            level="L40–45 (Advanced)",
             growth_intensity="minimal",
             org_name="demo",
             focus_area="Quality First",
@@ -369,6 +374,7 @@ class TestAPIGenerateEndpoint:
         assert response.status_code >= 400
 
 
+@pytest.mark.unit
 class TestAPIOrgFocusAreasEndpoint:
     """Test /api/orgs/{org_name}/focus-areas endpoint."""
 
@@ -424,6 +430,7 @@ class TestAPIOrgFocusAreasEndpoint:
         assert "content" in data
 
 
+@pytest.mark.integration
 class TestAPIRootEndpoint:
     """Test API root and docs endpoints."""
 
@@ -460,6 +467,7 @@ class TestAPIRootEndpoint:
             "OpenAPI schema should document endpoints"
 
 
+@pytest.mark.unit
 class TestAPIErrorHandling:
     """Test API error handling and edge cases."""
 
