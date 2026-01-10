@@ -252,7 +252,7 @@ Include strategic focus areas and context relevant to the organization.
 
 ### Goal Framework Prompt
 
-Base framork prompt for goal generation:
+Base framework prompt for goal generation:
 - `prompts/goal_generation_framework_prompt.txt`
 
 Used for all goal generation requests.

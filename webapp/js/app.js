@@ -162,9 +162,9 @@ async function onFormSubmit(event) {
         // Call API
         const response = await generateGoals(formData);
 
-        // Extract prompts (backward compatible)
-        const frameworkPrompt = response.framework ?? response.prompts[0];
-        const userContext = response.user_context ?? response.prompts[1];
+        // Extract prompts from new response format
+        const frameworkPrompt = response.framework;
+        const userContext = response.user_context;
 
         // Display results
         document.getElementById('framework-prompt-content').textContent = frameworkPrompt;
