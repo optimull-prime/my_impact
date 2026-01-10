@@ -1,7 +1,11 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 from typing import Optional
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 
 from myimpact.assembler import (
     assemble_prompt,
@@ -10,6 +14,9 @@ from myimpact.assembler import (
     discover_scales,
     load_org_focus_areas,
 )
+
+# Initialize rate limiter
+limiter = Limiter(key_func=get_remote_address)
 
 app = FastAPI(
     title="MyImpact API",
@@ -22,6 +29,17 @@ app = FastAPI(
         "name": "MIT",
     },
 )
+
+# Add rate limit exception handler
+@app.exception_handler(RateLimitExceeded)
+async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
+    return JSONResponse(
+        status_code=429,
+        content={"detail": "Too many requests. Please try again later."},
+    )
+
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, rate_limit_handler)
 
 # Add CORS middleware to allow frontend requests
 app.add_middleware(
@@ -84,7 +102,8 @@ async def get_org_focus_areas(org_name: str):
 
 
 @app.post("/api/goals/generate")
-async def generate_prompts(request: GenerateRequest):
+@limiter.limit("10/minute")
+async def generate_prompts(request: Request, data: GenerateRequest):
     """Generate goal-setting prompts.
     
     Returns a JSON object containing:
@@ -94,22 +113,22 @@ async def generate_prompts(request: GenerateRequest):
     """
     try:
         framework_prompt, user_context = assemble_prompt(
-            scale=request.scale,
-            level=request.level,
-            growth_intensity=request.growth_intensity,
-            org_name=request.org or "demo",
-            goal_style=request.goal_style or "independent",
-            focus_area=request.focus_area or None,
+            scale=data.scale,
+            level=data.level,
+            growth_intensity=data.growth_intensity,
+            org_name=data.org or "demo",
+            goal_style=data.goal_style or "independent",
+            focus_area=data.focus_area or None,
         )
 
         return {
             "inputs": {
-                "scale": request.scale,
-                "level": request.level,
-                "growth_intensity": request.growth_intensity,
-                "org": request.org or "demo",
-                "goal_style": request.goal_style or "independent",
-                "focus_area": request.focus_area,
+                "scale": data.scale,
+                "level": data.level,
+                "growth_intensity": data.growth_intensity,
+                "org": data.org or "demo",
+                "goal_style": data.goal_style or "independent",
+                "focus_area": data.focus_area,
             },
             # modern structured format
             "framework": framework_prompt,
