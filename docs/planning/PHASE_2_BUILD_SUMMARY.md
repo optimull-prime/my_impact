@@ -46,12 +46,12 @@
 
 #### Features Implemented:
 ✅ Landing page with hero section and value propositions  
-✅ Input form with 6 parameters (scale, level, intensity, org, theme, style)  
+✅ Input form with 6 parameters (scale, level, intensity, org, focus area, style)  
 ✅ Dynamic dropdown population from `/api/metadata`  
 ✅ Form validation (required fields, UI feedback)  
 ✅ API integration with loading state  
 ✅ Results display with collapsible sections  
-✅ Copy-to-clipboard for system prompt  
+✅ Copy-to-clipboard for framework prompt  
 ✅ Copy-to-clipboard for user context  
 ✅ Copy both prompts combined  
 ✅ Success/error toast notifications  
@@ -164,7 +164,7 @@ Status: 200
 Response: {
   "inputs": {...},
   "prompts": [
-    "System prompt text...",
+    "Framework prompt text...",
     "User context text..."
   ],
   "result": null,
@@ -206,8 +206,8 @@ FastAPI Backend (localhost:8000)
     └─ POST /api/goals/generate
         └─ assemble_prompt()
             ├─ load_culture_csv()
-            ├─ load_org_themes()
-            ├─ load_system_prompt()
+            ├─ load_org_focus_areas()
+            ├─ load_framework_prompt()
             └─ extract_culture_for_level()
 ```
 
@@ -319,7 +319,7 @@ Verify frontend → API → prompts workflow in production.
 - No analytics/tracking
 - No browser offline support
 - Prompts not saved to database
-- No admin UI for editing culture/themes
+- No admin UI for editing culture/focus_areas
 
 These will be addressed in Phase 3+ enhancements.
 

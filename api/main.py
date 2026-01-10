@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import Optional
@@ -48,7 +48,7 @@ class GenerateRequest(BaseModel):
         ..., description="Growth intensity", examples=["minimal", "moderate", "aggressive"]
     )
     org: str = Field("demo", description="Organization name", examples=["demo"])
-    theme: Optional[str] = Field(None, description="Optional emphasis / focus theme")
+    focus_area: Optional[str] = Field(None, description="Optional emphasis / focus areas")
     goal_style: str = Field(
         "independent", description="Goal style", examples=["independent", "progressive"]
     )
@@ -83,20 +83,52 @@ async def get_org_focus_areas(org_name: str):
         return {"content": None}
 
 
-@app.post("/api/goals/generate", tags=["Goals"])
+@app.post("/api/goals/generate")
 async def generate_prompts(request: GenerateRequest):
-    system_prompt, user_context = assemble_prompt(
-        scale=request.scale,
-        level=request.level,
-        growth_intensity=request.growth_intensity,
-        org_name=request.org,
-        theme=request.theme,
-        goal_style=request.goal_style,
-    )
+    """Generate goal-setting prompts.
+    
+    Returns a JSON object containing:
+    - framework: The system/instruction prompt.
+    - user_context: The data-driven context for the specific user.
+    - powered_by: Indicates the generation engine ("prompts-only" for when copy only enabled).
+    """
+    try:
+        framework_prompt, user_context = assemble_prompt(
+            scale=request.scale,
+            level=request.level,
+            growth_intensity=request.growth_intensity,
+            org_name=request.org or "demo",
+            goal_style=request.goal_style or "independent",
+            focus_area=request.focus_area or None,
+        )
 
-    return {
-        "inputs": request.model_dump(),
-        "prompts": [system_prompt, user_context],
-        "result": None,
-        "powered_by": "prompts-only",
-    }
+        return {
+            "inputs": {
+                "scale": request.scale,
+                "level": request.level,
+                "growth_intensity": request.growth_intensity,
+                "org": request.org or "demo",
+                "goal_style": request.goal_style or "independent",
+                "focus_area": request.focus_area,
+            },
+            # modern structured format
+            "framework": framework_prompt,
+            "user_context": user_context,
+            "result": None,
+            "powered_by": "prompts-only",
+        }
+    except FileNotFoundError as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Configuration error: {str(e)}",
+        )
+    except ValueError as e:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid request parameters: {str(e)}",
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Internal server error: {str(e)}",
+        )

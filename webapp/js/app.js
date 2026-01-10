@@ -78,6 +78,12 @@ function populateOrgDropdown() {
     const orgSelect = document.getElementById('org');
     orgSelect.innerHTML = '<option value="">Select your organization...</option>';
 
+    // Allow opting out of organizational focus
+    const noneOption = document.createElement('option');
+    noneOption.value = 'none';
+    noneOption.textContent = 'None (no organizational focus)';
+    orgSelect.appendChild(noneOption);
+
     cachedMetadata.organizations.forEach(org => {
         const option = document.createElement('option');
         option.value = org;
@@ -133,7 +139,7 @@ async function onFormSubmit(event) {
         level: document.getElementById('level').value,
         growth_intensity: document.querySelector('input[name="growth_intensity"]:checked').value,
         org: document.getElementById('org').value,
-        theme: document.getElementById('theme').value.trim() || null,
+        focus_area: document.getElementById('focus_area').value.trim() || null,
         goal_style: document.querySelector('input[name="goal_style"]:checked').value,
     };
 
@@ -156,17 +162,21 @@ async function onFormSubmit(event) {
         // Call API
         const response = await generateGoals(formData);
 
-        // Extract prompts
-        const systemPrompt = response.prompts[0];
-        const userContext = response.prompts[1];
+        // Extract prompts from new response format
+        const frameworkPrompt = response.framework;
+        const userContext = response.user_context;
 
         // Display results
-        document.getElementById('system-prompt-content').textContent = systemPrompt;
+        document.getElementById('framework-prompt-content').textContent = frameworkPrompt;
         document.getElementById('user-context-content').textContent = userContext;
+
+        // Display full prompt preview
+        const fullPromptPreview = `[GOAL FRAMEWORK]\n${frameworkPrompt}\n\n[YOUR CUSTOMIZATION]\n${userContext}`;
+        document.getElementById('full-prompt-preview').value = fullPromptPreview;
 
         // Store in window for copy operations
         window.currentPrompts = {
-            system: systemPrompt,
+            framework: frameworkPrompt,
             user: userContext,
         };
 
@@ -174,6 +184,7 @@ async function onFormSubmit(event) {
         document.getElementById('loading').classList.add('hidden');
         document.getElementById('results-container').classList.remove('hidden');
 
+        // Keep collapsible sections collapsed by default (user can expand if needed)
     } catch (error) {
         console.error('Error generating prompts:', error);
         document.getElementById('loading').classList.add('hidden');
@@ -206,14 +217,14 @@ async function copyPrompt(type) {
     let textToCopy = '';
     let label = '';
 
-    if (type === 'system') {
-        textToCopy = window.currentPrompts.system;
+    if (type === 'framework') {
+        textToCopy = window.currentPrompts.framework;
         label = 'Goal Framework';
     } else if (type === 'user') {
         textToCopy = window.currentPrompts.user;
         label = 'Your Customization';
     } else if (type === 'both') {
-        textToCopy = `[GOAL FRAMEWORK]\n${window.currentPrompts.system}\n\n[YOUR CUSTOMIZATION]\n${window.currentPrompts.user}`;
+        textToCopy = `[GOAL FRAMEWORK]\n${window.currentPrompts.framework}\n\n[YOUR CUSTOMIZATION]\n${window.currentPrompts.user}`;
         label = 'Both Prompts';
     }
 
@@ -234,6 +245,8 @@ function resetForm() {
     document.getElementById('results-section').classList.add('hidden');
     document.getElementById('org-focus-areas-container').classList.add('hidden');
     document.getElementById('org-focus-areas-display').value = '';
+    document.getElementById('full-prompt-preview').value = '';
+    document.getElementById('level').innerHTML = '<option value="">Select your level...</option>';
     window.currentPrompts = null;
     document.getElementById('form-section').scrollIntoView({ behavior: 'smooth' });
 }

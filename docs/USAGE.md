@@ -26,8 +26,8 @@ Generate 6–9 standalone goals with no dependencies:
 # Default: independent goals, demo org, technical track, L30, moderate growth
 myimpact generate technical "L30–35 (Career)" moderate
 
-# With theme bias
-myimpact generate technical "L30–35 (Career)" moderate --goal-style progressive --theme "Standardize for Speed and Interchangeability"
+# With focus_area bias
+myimpact generate technical "L30–35 (Career)" moderate --goal-style progressive --focus_areas= "Standardize for Speed and Interchangeability"
 
 # Leadership track
 myimpact generate leadership "L80–85 (VP)" moderate --org demo
@@ -42,8 +42,8 @@ Generate 4 quarterly goals that build upon each other (Q1 → Q4):
 # Progressive goals, technical track, L50, aggressive growth
 myimpact generate technical "L50–55 (Expert)" aggressive --goal-style progressive
 
-# Progressive with theme bias
-myimpact generate technical "L40–45 (Advanced)" moderate --goal-style progressive --theme "Increase productivity"
+# Progressive with focus_area bias
+myimpact generate technical "L40–45 (Advanced)" moderate --goal-style progressive --focus_area "Increase productivity"
 
 # Leadership track, progressive
 myimpact generate leadership "L90–95 (SVP)" aggressive --goal-style progressive --org demo
@@ -53,7 +53,7 @@ myimpact generate leadership "L90–95 (SVP)" aggressive --goal-style progressiv
 - **Independent** (default): Flexibility to pursue goals in any order; ideal for diverse skill development
 - **Progressive**: 4-goal narrative arc across quarters; demonstrates leadership maturity and sustained commitment
 
-9. Review system and user context output. Wire to Azure OpenAI in the API when ready.
+9. Review framework and user context output. Wire to Azure OpenAI in the API when ready.
 
 ## Export Flow
 10. Export will render goals to Markdown/CSV.

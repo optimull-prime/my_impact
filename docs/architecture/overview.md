@@ -29,7 +29,7 @@ graph TD
 
 ## Goals & Principles
 
-1. **Demonstrate Value**: Show how MyImpact generates context-rich prompts aligned to culture, job levels, and org themes
+1. **Demonstrate Value**: Show how MyImpact generates context-rich prompts aligned to culture, job levels, and org focus areas
 2. **Prompt-First UX**: Emphasize the "copy to any LLM" workflow (ChatGPT, Claude, Gemini, etc.)
 3. **Azure-Hostable**: Deploy as static + containerized with minimal hosting costs (~$15/month)
 4. **Foundation for Growth**: Architecture supports future enhancements (LLM integration, persistence, auth)
@@ -76,7 +76,7 @@ webapp/
 - **Level** (dropdown): L10–15 (Entry), L20–25 (Developing), L30–35 (Career), etc.
 - **Growth Intensity** (radio): Minimal, Moderate, Aggressive
 - **Organization** (dropdown): Demo
-- **Theme** (optional): Strategic focus area for goal generation
+- **Focus Area** (optional): Strategic focus area for goal generation
 - **Goal Style** (radio): Independent (6–9 standalone goals) or Progressive (4 quarterly goals)
 
 **Actions**:
@@ -84,9 +84,9 @@ webapp/
 - Form validation ensures required fields filled
 
 #### Results Display
-**System Prompt Card**:
-- Collapsible card showing full system prompt
-- "Copy System Prompt" button with clipboard icon
+**Framework Prompt Card**:
+- Collapsible card showing full framework prompt
+- "Copy Framework Prompt" button with clipboard icon
 - Token count (optional)
 
 **User Context Card**:
@@ -94,7 +94,7 @@ webapp/
 - Cultural attributes for that level
 - Growth intensity guidance
 - Goal style guidance
-- Org themes
+- Org focus areas
 - "Copy User Context" button
 
 **Quick Actions**:
@@ -111,11 +111,11 @@ webapp/
 ```
 1. Land on page
 2. Scroll to form section
-3. Select Scale → Level → Intensity → Org → Theme (optional) → Goal Style
+3. Select Scale → Level → Intensity → Org → Focus Area (optional) → Goal Style
 4. Click "Generate Prompt"
 5. API call (loading spinner)
 6. Results display with two collapsible sections
-7. Click "Copy System Prompt" → Toast: "Copied!"
+7. Click "Copy Framework Prompt" → Toast: "Copied!"
 8. Click "Copy User Context" → Toast: "Copied!"
 9. Paste into ChatGPT/Claude/Gemini
 10. (Optional) "Start Over" to generate another prompt
@@ -147,7 +147,7 @@ data/
 └── culture_expectations_technical.csv
 
 prompts/
-└── goal_generation_system_prompt.txt
+└── goal_generation_framework_prompt.txt
 ```
 
 ### API Endpoints
@@ -200,7 +200,7 @@ prompts/
   "level": "L30–35 (Career)",
   "growth_intensity": "moderate",
   "org": "demo",
-  "theme": "Increase Productivity",  // optional
+  "focus_area": "Increase Productivity",  // optional
   "goal_style": "independent"
 }
 ```
@@ -210,7 +210,7 @@ prompts/
 {
   "inputs": { /* echo of request */ },
   "prompts": [
-    "You are a goal generation system...",  // System prompt
+    "You are a goal generation system...",  // Framework prompt
     "Generate 6-9 SMART goals..."           // User context
   ],
   "result": null,
@@ -268,9 +268,9 @@ Two CSV files define expectations for each scale/level:
 - Example: L80–85, "Strategic vision, drives organizational change"
 
 ### Goal Generation Prompt
-**`prompts/goal_generation_system_prompt.txt`**
+**`prompts/goal_generation_framework_prompt.txt`**
 - Base system prompt for LLM-powered generation
-- Can be extended with org themes for customization
+- Can be extended with org focus areas for customization
 
 ---
 

@@ -9,6 +9,20 @@ Welcome to MyImpact! This guide gets you up and running locally in minutes.
 
 ## Setup (5 Minutes)
 
+### Step 0: Create Virtual Environment (First Time Only)
+
+If you haven't created a virtual environment yet:
+
+```powershell
+# Windows PowerShell
+python -m venv .venv
+
+# macOS/Linux
+python3 -m venv .venv
+```
+
+This creates a `.venv` folder in your project directory. You only need to do this once.
+
 ### Step 1: Activate Virtual Environment
 
 ```powershell
@@ -72,7 +86,7 @@ You should see the MyImpact landing page! 🎉
 
 2. **Watch the loading spinner** appear while the API processes
 
-3. **View the results** - Two collapsible sections with system prompt and user context
+3. **View the results** - Two collapsible sections with goal framework prompt and user context
 
 4. **Copy buttons** - Click to copy prompts to clipboard
 

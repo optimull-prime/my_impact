@@ -1,4 +1,4 @@
-"""Prompt assembler: loads culture CSVs, org focus areas, and system prompt to generate LLM context."""
+"""Prompt assembler: loads culture CSVs, org focus areas, and framework text to generate LLM context."""
 
 import csv
 import os
@@ -47,13 +47,13 @@ def load_org_focus_areas(org_name: str) -> str:
         return f.read()
 
 
-def load_system_prompt() -> str:
-    """Load goal generation system prompt."""
+def load_framework_prompt() -> str:
+    """Load goal generation framework text."""
     prompts_dir = _get_resource_dir("prompts")
-    prompt_path = prompts_dir / "goal_generation_system_prompt.txt"
+    prompt_path = prompts_dir / "goal_generation_framework_prompt.txt"
 
     if not prompt_path.exists():
-        raise FileNotFoundError(f"System prompt not found: {prompt_path}")
+        raise FileNotFoundError(f"Framework file not found: {prompt_path}")
 
     with open(prompt_path, "r", encoding="utf-8") as f:
         return f.read()
@@ -72,7 +72,7 @@ def discover_scales() -> list[str]:
     return sorted(scales)
 
 
-def discover_levels() -> dict[str, list[str]]:
+def discover_all_levels() -> dict[str, list[str]]:
     """
     Discover available levels for each scale.
     Returns a dictionary mapping scale names to lists of level strings.
@@ -146,12 +146,12 @@ def assemble_prompt(
     level: str,
     growth_intensity: str,
     org_name: str = "demo",
-    theme: Optional[str] = None,
+    focus_area: Optional[str] = None,
     goal_style: str = "independent",
 ) -> tuple[str, str]:
     """
-    Assemble system and user prompts from curated data.
-    Returns: (system_prompt, user_context_prompt)
+    Assemble framework and user context from curated data.
+    Returns: (framework, user_context)
     """
     # Load and extract culture
     culture = extract_culture_for_level(scale, level)
@@ -169,10 +169,10 @@ def assemble_prompt(
         org_focus_areas_full = ""
 
     # User-specified focus (optional emphasis on top of full org context)
-    user_focus = theme.strip() if theme else ""
+    user_focus = focus_area.strip() if focus_area else ""
 
-    # Load system prompt
-    system_prompt = load_system_prompt()
+    # Load goal framework prompt
+    framework = load_framework_prompt()
 
     # Build user context
     growth_guidance = _get_growth_guidance(growth_intensity)
@@ -208,7 +208,7 @@ def assemble_prompt(
     if user_focus:
         user_context += f"""
 ### Your Focus Areas
-The user wants to emphasize the following areas or themes:
+The user wants to emphasize the following focus areas:
 {user_focus}
 """
 
@@ -225,4 +225,4 @@ Generate quarterly career goals that:
 Generate the goals now.
 """
 
-    return system_prompt, user_context
+    return framework, user_context

@@ -19,20 +19,20 @@
 #### 1. Core Functionality ✅
 - [x] Prompt assembler with culture CSV parsing
 - [x] Multi-scale support (technical, leadership)
-- [x] Multi-org support (org_themes_{name}.md pattern)
+- [x] Multi-org support (org_focus_area_{name}.md pattern)
 - [x] Goal styles (independent, progressive)
 - [x] Growth intensities (minimal, moderate, aggressive)
-- [x] Externalized system prompt (goal_generation_system_prompt.txt)
-- [x] Goal rationale requirement (2-3 sentences connecting culture + level + theme)
+- [x] Externalized goal framework prompt (goal_generation_framework_prompt.txt)
+- [x] Goal rationale requirement (2-3 sentences connecting culture + level + focus area)
 
 #### 2. Curated Data Files ✅
 - [x] `data/culture_expectations_technical.csv` (6 job levels × 8 cultural attributes)
 - [x] `data/culture_expectations_leadership.csv` (4 job levels × 8 cultural attributes)
-- [x] `prompts/org_themes_demo.md` (sample org themes)
-- [x] `prompts/goal_generation_system_prompt.txt` (externalized system prompt)
+- [x] `prompts/org_focus_area_demo.md` (sample org focus areas)
+- [x] `prompts/goal_generation_framework_prompt.txt` (externalized goal framework prompt)
 
 #### 3. CLI Interface ✅
-- [x] `myimpact generate <scale> <level> <growth> [--org] [--theme] [--goal-style]`
+- [x] `myimpact generate <scale> <level> <growth> [--org] [--focus_area] [--goal-style]`
 - [x] `myimpact list-options` (discover all available options)
 - [x] Click framework (modern Python CLI library)
 - [x] Entrypoint: `myimpact` command via setuptools
@@ -139,7 +139,7 @@ Returns all available options for frontend/UI:
 ##### `POST /api/goals/generate` ✅
 Accepts GenerateRequest and returns:
 - `inputs`: Echo of request payload
-- `prompts`: System prompt + user context (always generated)
+- `prompts`: Goal framework prompt + user context (always generated)
 - `result`: LLM-generated goals (if Azure OpenAI configured, else `null`)
 - `powered_by`: "Azure OpenAI" or "prompts-only"
 
@@ -150,7 +150,7 @@ Accepts GenerateRequest and returns:
   "level": "L10–15 (Entry)|...",
   "growth_intensity": "minimal|moderate|aggressive",
   "org": "demo",
-  "theme": null,
+  "focus_area": null,
   "goal_style": "independent|progressive"
 }
 ```
@@ -266,8 +266,8 @@ Company Goal Builder/
 │   ├── culture_expectations_technical.csv     ✅ FIXED: Quoted commas
 │   └── culture_expectations_leadership.csv    ✅ FIXED: Quoted commas
 ├── prompts/
-│   ├── goal_generation_system_prompt.txt
-│   └── org_themes_demo.md
+│   ├── goal_generation_framework_prompt.txt
+│   └── org_focus_area_demo.md
 ├── docs/
 │   ├── API.md                    ✅ API endpoint documentation
 │   └── USAGE.md                  ⚠️ Outdated (references old script path)

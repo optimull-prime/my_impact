@@ -29,7 +29,7 @@ Request body:
   "level": "L30",
   "growth_intensity": "moderate",
   "org": "demo",
-  "theme": "Standardize for Speed and Interchangeability",
+  "focus_area": "Standardize for Speed and Interchangeability",
   "goal_style": "independent"
 }
 ```
@@ -38,7 +38,7 @@ Response:
 ```json
 {
   "inputs": { /* echo of request */ },
-  "prompts": { "system": "...", "user": "..." },
+  "prompts": { "framework": "...", "user": "..." },
   "result": "... goal text ...",
   "powered_by": "Azure OpenAI" | "prompts-only"
 }

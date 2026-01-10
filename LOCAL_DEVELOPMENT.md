@@ -27,7 +27,7 @@ Company Goal Builder/
 │   ├── assembler.py             # Prompt assembly logic
 │   └── ...
 ├── data/                          # Culture CSVs
-├── prompts/                       # Org themes & system prompt
+├── prompts/                       # Org focus areas & goal framework prompt
 ├── Dockerfile                     # Container image
 └── pyproject.toml
 ```

@@ -130,7 +130,7 @@ curl -X POST http://localhost:8000/api/goals/generate \
     "level": "L30–35 (Career)",
     "growth_intensity": "moderate",
     "org": "demo",
-    "theme": "Cloud Architecture",
+    "focus_area": "Cloud Architecture",
     "goal_style": "independent"
   }'
 ```
@@ -143,7 +143,7 @@ curl -X POST http://localhost:8000/api/goals/generate \
 | `level` | string | ✅ | From `/api/metadata.levels[scale]` | "L30–35 (Career)" |
 | `growth_intensity` | string | ✅ | "minimal", "moderate", "aggressive" | "moderate" |
 | `org` | string | ✅ | From `/api/metadata.organizations` | "demo" |
-| `theme` | string | ❌ | Any text (bias for goal generation) | "Cloud Architecture" |
+| `focus_area` | string | ❌ | Any text (bias for goal generation) | "Cloud Architecture" |
 | `goal_style` | string | ✅ | "independent", "progressive" | "independent" |
 
 **Response** (200 OK):
@@ -155,12 +155,12 @@ curl -X POST http://localhost:8000/api/goals/generate \
     "level": "L30–35 (Career)",
     "growth_intensity": "moderate",
     "org": "demo",
-    "theme": "Cloud Architecture",
+    "focus_area": "Cloud Architecture",
     "goal_style": "independent"
   },
   "prompts": [
     "You are an expert goal generation system specializing in career development...",
-    "Scale: Technical (Individual Contributor)\nLevel: L30–35 (Career)\nIntensity: Moderate growth\n\nOrganization Themes:\n- Innovation\n- Ownership\n- Excellence\n\nCultural Expectations:\n- Drives technical direction...\n..."
+    "Scale: Technical (Individual Contributor)\nLevel: L30–35 (Career)\nIntensity: Moderate growth\n\nOrganization Focus Areas:\n- Innovation\n- Ownership\n- Excellence\n\nCultural Expectations:\n- Drives technical direction...\n..."
   ],
   "result": null,
   "powered_by": "prompts-only"
@@ -366,7 +366,7 @@ curl -X POST http://localhost:8000/api/goals/generate \
     "level": "L30–35 (Career)",
     "growth_intensity": "moderate",
     "org": "demo",
-    "theme": "Cloud Architecture",
+    "focus_area": "Cloud Architecture",
     "goal_style": "independent"
   }' | python -m json.tool
 ```
@@ -392,7 +392,7 @@ payload = {
     "level": "L30–35 (Career)",
     "growth_intensity": "moderate",
     "org": "demo",
-    "theme": "Cloud Architecture",
+    "focus_area": "Cloud Architecture",
     "goal_style": "independent"
 }
 result = requests.post(f"{BASE_URL}/api/goals/generate", json=payload).json()
