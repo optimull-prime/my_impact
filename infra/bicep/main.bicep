@@ -33,7 +33,7 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-07-01' =
     name: 'Standard'
   }
   properties: {
-    adminUserEnabled: true
+    adminUserEnabled: false // Security best practice: Use Managed Identity instead
     publicNetworkAccess: 'Enabled'
   }
 }
@@ -41,7 +41,7 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-07-01' =
 // ============================================================================
 // Container Apps Environment
 // ============================================================================
-resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2023-11-02-preview' = {
+resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2025-07-01' = {
   name: containerAppsEnvName
   location: location
   tags: commonTags
@@ -55,7 +55,7 @@ resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2023-11-02-
 // ============================================================================
 // Container App (MyImpact API)
 // ============================================================================
-resource containerApp 'Microsoft.App/containerApps@2023-11-02-preview' = {
+resource containerApp 'Microsoft.App/containerApps@2025-07-01' = {
   name: containerAppName
   location: location
   tags: commonTags
@@ -73,14 +73,7 @@ resource containerApp 'Microsoft.App/containerApps@2023-11-02-preview' = {
       registries: [
         {
           server: containerRegistry.properties.loginServer
-          username: containerRegistry.listCredentials().username
-          passwordSecretRef: 'registry-password'
-        }
-      ]
-      secrets: [
-        {
-          name: 'registry-password'
-          value: containerRegistry.listCredentials().passwords[0].value
+          identity: 'system' // Use system-assigned managed identity for ACR authentication
         }
       ]
     }
@@ -123,13 +116,31 @@ resource containerApp 'Microsoft.App/containerApps@2023-11-02-preview' = {
           {
             name: 'http-requests'
             custom: {
-              query: 'http_requests_per_second'
-              threshold: '100'
+              type: 'http'
+              metadata: {
+                concurrentRequests: '100'
+              }
             }
           }
         ]
       }
     }
+  }
+}
+
+// ============================================================================
+// RBAC: Grant Container App access to pull images from ACR
+// ============================================================================
+// Built-in Azure role: AcrPull (7f951dda-4ed3-4680-a7ca-43fe172d538d)
+var acrPullRoleDefinitionId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d')
+
+resource acrPullRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(containerRegistry.id, containerApp.id, acrPullRoleDefinitionId)
+  scope: containerRegistry
+  properties: {
+    roleDefinitionId: acrPullRoleDefinitionId
+    principalId: containerApp.identity.principalId
+    principalType: 'ServicePrincipal'
   }
 }
 
@@ -141,3 +152,4 @@ output containerRegistryName string = containerRegistry.name
 output containerAppFqdn string = containerApp.properties.configuration.ingress.fqdn
 output containerAppUrl string = 'https://${containerApp.properties.configuration.ingress.fqdn}'
 output containerAppsEnvironmentId string = containerAppsEnvironment.id
+output containerAppPrincipalId string = containerApp.identity.principalId

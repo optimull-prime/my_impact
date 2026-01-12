@@ -14,6 +14,10 @@ trigger: always_on
 - Only quote from files explicitly shared in this conversation
 - If you need to speculate, prefix with: "Without seeing [file], I would guess..."
 
+# Agent specific instructions
+- Put Agent Summaries & Work Products in `docs/private/agent-implementations` with a filename of `YYYY-MM-DD-{agent-activity-name}.md`
+
+
 ## Forbidden behaviors:
 - ❌ Inventing function signatures from files not shared
 - ❌ Claiming "the code does X" when you haven't seen it

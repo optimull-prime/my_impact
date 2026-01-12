@@ -46,3 +46,4 @@ output resourceGroupName string = rg.name
 output containerRegistryLoginServer string = infrastructure.outputs.containerRegistryLoginServer
 output containerAppUrl string = infrastructure.outputs.containerAppUrl
 output containerAppsEnvironmentId string = infrastructure.outputs.containerAppsEnvironmentId
+output containerAppPrincipalId string = infrastructure.outputs.containerAppPrincipalId

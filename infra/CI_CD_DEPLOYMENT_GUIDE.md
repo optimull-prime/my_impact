@@ -1,3 +1,4 @@
+<!-- filepath: z:\Shared\Code\my_impact\infra\CI_CD_DEPLOYMENT_GUIDE.md -->
 # Complete CI/CD Deployment Guide for MyImpact
 
 This guide provides step-by-step instructions to deploy MyImpact to Azure with automated CI/CD pipelines using GitHub Actions.
@@ -36,9 +37,7 @@ git --version
 
 ## Initial Azure Setup
 
-### Step 1: Create Azure Service Principal
-
-The GitHub Actions workflows need permission to deploy resources to Azure. Create a service principal:
+### Step 1: Create Resource Group First
 
 ```bash
 # Set variables
@@ -54,38 +53,78 @@ az account set --subscription "$SUBSCRIPTION_ID"
 az group create \
   --name "$RESOURCE_GROUP_NAME" \
   --location "$AZURE_REGION"
-
-# Create service principal with Contributor role
-az ad sp create-for-rbac \
-  --name "myimpact-ci-cd" \
-  --role "Contributor" \
-  --scopes "/subscriptions/$SUBSCRIPTION_ID" \
-  --json-auth > azure-credentials.json
 ```
 
-**⚠️ Important**: Save the output from `azure-credentials.json` - you'll need it for GitHub Secrets.
+### Step 2: Create Service Principal with Least-Privilege Scope
 
-### Step 2: Create Azure Container Registry
+**Security Best Practice**: Scope the service principal to **only the resource group**, not the entire subscription.
+
+```bash
+# Get resource group ID for scoping
+RESOURCE_GROUP_ID=$(az group show \
+  --name "$RESOURCE_GROUP_NAME" \
+  --query id -o tsv)
+
+# Create service principal scoped to resource group only
+az ad sp create-for-rbac \
+  --name "myimpact-ci-cd-demo" \
+  --role "Contributor" \
+  --scopes "$RESOURCE_GROUP_ID" \
+  --json-auth > azure-credentials.json
+
+echo "✅ Service principal created with resource group scope"
+echo "📁 Credentials saved to: azure-credentials.json"
+```
+
+**🔒 Security Improvement**: If the `AZURE_CREDENTIALS` secret is compromised, the attacker can only affect resources in `myimpact-demo-rg`, not the entire subscription.
+
+**⚠️ Important**: 
+- Save the output from `azure-credentials.json` - you'll need it for GitHub Secrets
+- **Delete this file after adding to GitHub Secrets**: `rm azure-credentials.json`
+- The service principal uses a long-lived client secret; for production, use [Federated Credentials](#optional-use-federated-credentials-for-production) instead
+
+### Step 3: Create Azure Container Registry
+
+**Security Note**: Admin user is **disabled** by default (following managed identity best practices).
 
 ```bash
 REGISTRY_NAME="myimpactdemo$(date +%s)"
 
-# Create Container Registry
+# Create Container Registry (admin user disabled)
 az acr create \
   --resource-group "$RESOURCE_GROUP_NAME" \
   --name "$REGISTRY_NAME" \
   --sku Standard \
-  --location "$AZURE_REGION"
+  --location "$AZURE_REGION" \
+  --admin-enabled false
 
-# Get registry credentials
-az acr credential show \
-  --name "$REGISTRY_NAME" \
-  --resource-group "$RESOURCE_GROUP_NAME"
+echo "✅ Container Registry created: $REGISTRY_NAME.azurecr.io"
 ```
 
-Save the output - you'll need the login server, username, and password for GitHub Secrets.
+**Note**: We use the service principal credentials for **CI/CD image push only**. The Container App uses **Managed Identity** to pull images (no admin credentials needed).
 
-### Step 3: Create Container Apps Environment
+### Step 4: Grant Service Principal AcrPush Role
+
+```bash
+# Get ACR resource ID
+ACR_ID=$(az acr show \
+  --name "$REGISTRY_NAME" \
+  --resource-group "$RESOURCE_GROUP_NAME" \
+  --query id -o tsv)
+
+# Get service principal app ID
+SP_APP_ID=$(cat azure-credentials.json | jq -r '.clientId')
+
+# Grant AcrPush role for CI/CD (least privilege for pushing images)
+az role assignment create \
+  --assignee "$SP_APP_ID" \
+  --role "AcrPush" \
+  --scope "$ACR_ID"
+
+echo "✅ Service principal granted AcrPush role (push images only)"
+```
+
+### Step 5: Create Container Apps Environment
 
 ```bash
 ENV_NAME="myimpact-demo-env"
@@ -94,9 +133,11 @@ az containerapp env create \
   --name "$ENV_NAME" \
   --resource-group "$RESOURCE_GROUP_NAME" \
   --location "$AZURE_REGION"
+
+echo "✅ Container Apps Environment created: $ENV_NAME"
 ```
 
-### Step 4: Create Azure Static Web Apps Resource (Optional)
+### Step 6: Create Azure Static Web Apps Resource (Optional)
 
 If you want automated Static Web Apps deployment:
 
@@ -110,9 +151,13 @@ az staticwebapp create \
   --location "$AZURE_REGION"
 
 # Get deployment token
-az staticwebapp secrets list \
+DEPLOYMENT_TOKEN=$(az staticwebapp secrets list \
   --name "$STATIC_APP_NAME" \
-  --resource-group "$RESOURCE_GROUP_NAME"
+  --resource-group "$RESOURCE_GROUP_NAME" \
+  --query 'properties.apiKey' -o tsv)
+
+echo "✅ Static Web App created: $STATIC_APP_NAME"
+echo "📝 Deployment token: $DEPLOYMENT_TOKEN"
 ```
 
 Save the deployment token for GitHub Secrets.
@@ -134,20 +179,22 @@ GitHub Actions workflows use secrets to authenticate with Azure. Configure these
 
 | Secret Name | Value | Source |
 |---|---|---|
-| `AZURE_CREDENTIALS` | Full JSON output from `azure-credentials.json` | Step 1 above |
+| `AZURE_CREDENTIALS` | Full JSON output from `azure-credentials.json` | Step 2 above |
 | `AZURE_RESOURCE_GROUP` | `myimpact-demo-rg` | Created in Step 1 |
-| `AZURE_REGISTRY_LOGIN_SERVER` | e.g., `myimpactdemo12345.azurecr.io` | Step 2 output |
-| `AZURE_REGISTRY_USERNAME` | Username from ACR credentials | Step 2 output |
-| `AZURE_REGISTRY_PASSWORD` | Password from ACR credentials | Step 2 output |
+| `AZURE_REGISTRY_LOGIN_SERVER` | e.g., `myimpactdemo12345.azurecr.io` | Step 3 output |
 | `CONTAINER_APP_NAME` | `myimpact-demo-api` | Created by workflow |
-| `CONTAINER_APPS_ENV` | `myimpact-demo-env` | Step 3 above |
+| `CONTAINER_APPS_ENV` | `myimpact-demo-env` | Step 5 above |
+
+**Security Note**: `AZURE_REGISTRY_USERNAME` and `AZURE_REGISTRY_PASSWORD` are **not needed** because:
+- CI/CD uses service principal credentials from `AZURE_CREDENTIALS`
+- Container App uses Managed Identity to pull images
 
 ### Required Secrets for Frontend (Static Web Apps)
 
 | Secret Name | Value | Source |
 |---|---|---|
-| `AZURE_STATIC_WEB_APPS_NAME` | `myimpact-demo` | Step 4 above |
-| `AZURE_CREDENTIALS` | Full JSON output from `azure-credentials.json` | Step 1 above |
+| `AZURE_STATIC_WEB_APPS_API_TOKEN` | Deployment token from Step 6 | Step 6 above |
+| `AZURE_CREDENTIALS` | Full JSON output from `azure-credentials.json` | Step 2 above |
 | `AZURE_RESOURCE_GROUP` | `myimpact-demo-rg` | Created in Step 1 |
 
 ### Example Azure Credentials Secret
@@ -161,6 +208,45 @@ Your `AZURE_CREDENTIALS` secret should look like:
   "subscriptionId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
   "tenantId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 }
+```
+
+**🔒 Security Reminder**: After adding to GitHub Secrets, delete the local file:
+```bash
+rm azure-credentials.json
+```
+
+---
+
+## Optional: Use Federated Credentials for Production
+
+For **production environments**, use OpenID Connect (OIDC) federated credentials instead of long-lived client secrets:
+
+```bash
+# Create app registration (no secret)
+APP_ID=$(az ad app create \
+  --display-name "myimpact-prod-github-actions" \
+  --query appId -o tsv)
+
+# Create service principal
+SP_ID=$(az ad sp create --id "$APP_ID" --query id -o tsv)
+
+# Create federated credential for GitHub Actions
+az ad app federated-credential create \
+  --id "$APP_ID" \
+  --parameters '{
+    "name": "github-actions-federated",
+    "issuer": "https://token.actions.githubusercontent.com",
+    "subject": "repo:YOUR_GITHUB_ORG/my_impact:ref:refs/heads/main",
+    "audiences": ["api://AzureADTokenExchange"]
+  }'
+
+# Grant contributor role to resource group
+az role assignment create \
+  --assignee "$SP_ID" \
+  --role Contributor \
+  --scope "$RESOURCE_GROUP_ID"
+
+echo "✅ Federated credentials setup complete"
 ```
 
 ---

@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+title: MyImpact
+message: "If you use this software, please cite it using these metadata."
+type: software
+authors:
+  - name: "MyImpact Team"
+    website: "https://github.com/hackamull/my_impact"
+version: 0.1.0
+date-released: 2026-01-10
+repository-code: "https://github.com/hackamull/my_impact"
+license: Apache-2.0
+description: "AI-powered quarterly goal generation aligned to company culture, job levels, and competency expectations."
+keywords:
+  - goals
+  - career-development
+  - culture
+  - job-levels
+  - llm
+  - framework
+preferred-citation:
+  type: software
+  authors:
+    - name: "MyImpact Team"
+  title: "MyImpact: Goal Generation Framework"
+  version: 0.1.0
+  date-released: 2026-01-10
+  repository-code: "https://github.com/hackamull/my_impact"
+  url: "https://github.com/hackamull/my_impact"
