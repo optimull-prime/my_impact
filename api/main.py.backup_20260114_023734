@@ -209,5 +209,3 @@ async def generate_prompts(request: Request, data: GenerateRequest):
             status_code=500,
             detail=f"Internal server error: {str(e)}",
         )
-
-

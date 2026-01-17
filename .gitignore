@@ -175,3 +175,4 @@ events/
 docs/events/*.backup_*
 webapp/js/config.js.local
 .azure_config
+webapp/js/config.js
