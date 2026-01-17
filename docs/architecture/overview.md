@@ -2,6 +2,14 @@
 
 Complete system architecture for MyImpact Phase 2.
 
+## Architecture Documentation
+
+This overview provides a high-level summary. For detailed information, see:
+
+- **[System Overview](system-overview.md)** - Components, interactions, deployment architecture
+- **[Data Flow](data-flow.md)** - End-to-end data flow, request/response lifecycle
+- **[Security Design](security-design.md)** - Security architecture aligned with Azure Well-Architected Framework
+
 ## High-Level Design
 
 ```mermaid
@@ -9,7 +17,7 @@ graph TD
     A["Azure Static Web Apps<br/>(Frontend)"]
     B["Static Web App<br/>HTML/CSS/JavaScript<br/>---<br/>Landing page<br/>Input form<br/>Results display<br/>Copy-to-clipboard<br/>No build step"]
     
-    C["🔐 HTTPS + CORS"]
+    C["HTTPS + CORS"]
     
     D["Azure Container Apps<br/>(Backend)"]
     E["FastAPI Application<br/>api/main.py<br/>---<br/>GET /api/health<br/>GET /api/metadata<br/>POST /api/goals/generate"]
@@ -25,13 +33,11 @@ graph TD
 - **Backend**: Python FastAPI application (containerized)
 - **Communication**: HTTPS with CORS headers
 
----
-
 ## Goals & Principles
 
 1. **Demonstrate Value**: Show how MyImpact generates context-rich prompts aligned to culture, job levels, and org focus areas
 2. **Prompt-First UX**: Emphasize the "copy to any LLM" workflow (ChatGPT, Claude, Gemini, etc.)
-3. **Azure-Hostable**: Deploy as static + containerized with minimal hosting costs (~$15/month)
+3. **Azure-Hostable**: Deploy as static + containerized with minimal hosting costs (approximately $15/month)
 4. **Foundation for Growth**: Architecture supports future enhancements (LLM integration, persistence, auth)
 
 ---

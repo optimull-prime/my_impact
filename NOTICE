@@ -1,0 +1,11 @@
+# Attribution
+
+MyImpact © 2026 by the MyImpact contributors.
+
+The following attribution must be included in any redistribution or derivative work:
+
+> MyImpact: AI-powered quarterly goal generation framework aligned to company culture, job levels, and competency expectations. Created by the MyImpact team. https://github.com/optimull_prime/my_impact
+
+This work includes the goal-setting framework, prompt assembly logic, and culture/competency rubrics developed as part of this project. Credit to the MyImpact team for the framework design and implementation.
+
+See LICENSE.txt for the Apache-2.0 code license and docs/LICENSE-DOCS.md for documentation licensing (CC BY 4.0).

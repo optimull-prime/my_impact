@@ -161,3 +161,18 @@ test_output*.txt
 
 # Prompts not meant to be shared
 prompts/*_private.md
+
+# Agent/implementation summaries (temporary work products)
+docs/private/
+github-secrets.json
+
+# Event-specific and private documentation (temporary, not for general use)
+*_private.md
+OPENSPACE_*
+*_CHECKLIST.md
+*_QUICK_START*.md
+events/
+docs/events/*.backup_*
+webapp/js/config.js.local
+.azure_config
+webapp/js/config.js

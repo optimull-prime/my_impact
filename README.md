@@ -32,6 +32,11 @@ Complete setup guide for developers, with debugging tips and troubleshooting.
 
 Step-by-step instructions for deploying frontend to Azure Static Web Apps and backend to Azure Container Apps.
 
+### I want to demo this to my organization
+→ [**Demo Script**](docs/guides/04-demo-script.md)
+
+5-minute and 15-minute demo walkthroughs, talking points by audience, and Q&A guide.
+
 ### I want to understand the system design
 → [**Architecture Overview**](docs/architecture/overview.md)
 
@@ -41,6 +46,11 @@ System design, component breakdown, data model, and scalability considerations.
 → [**API Reference**](docs/api/README.md)
 
 Endpoints, request/response schemas, and integration examples in curl, Python, and JavaScript.
+
+### I want to understand how the docs are organized
+→ [**Documentation Organization**](docs/DOCUMENTATION_ORGANIZATION.md)
+
+Explains which docs are public (version-controlled) vs private (event-specific), and why.
 
 ---
 
@@ -202,14 +212,12 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ---
 
-## License
+## License & Attribution
 
-[LICENSE.txt](LICENSE.txt)
+**Code & Documentation**: [Apache-2.0](LICENSE.txt) — permissive open-source license with patent protection  
+**Data**: Not licensed for reuse (use as templates for your organization)
 
----
-
-## Status
-
-🔄 **Phase 2 (MVP)**: Web app demo complete, ready for feedback
-
-See [docs/planning/](docs/planning/) for detailed phase planning and historical phase documents.
+For attribution and licensing details, see:
+- [NOTICE](NOTICE) — Copyright and attribution
+- [CITATION.cff](CITATION.cff) — Citation metadata for GitHub and references
+- [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) — Open-source dependencies

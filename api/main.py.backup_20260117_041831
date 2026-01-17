@@ -58,6 +58,7 @@ app.add_exception_handler(RateLimitExceeded, rate_limit_exceeded_handler)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
+        "https://https://ashy-field-00f8a681e.2.azurestaticapps.net/",
         "https://myimpact-demo.azurestaticapps.net",  # Production
         "https://*.azurestaticapps.net",  # Azure Static Web Apps branch previews
         "http://localhost:3000",  # Local dev (frontend)
@@ -209,5 +210,4 @@ async def generate_prompts(request: Request, data: GenerateRequest):
             status_code=500,
             detail=f"Internal server error: {str(e)}",
         )
-
 

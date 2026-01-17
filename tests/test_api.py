@@ -373,6 +373,42 @@ class TestAPIGenerateEndpoint:
         # Should return error, not crash
         assert response.status_code >= 400
 
+    def test_generate_rejects_invalid_growth_intensity_values(self):
+        """
+        Given: Generate request with invalid growth_intensity value
+        When: POST /api/goals/generate
+        Then: Returns 400 or 422 validation error
+        """
+        payload = {
+            "scale": "technical",
+            "level": "L30–35 (Career)",
+            "growth_intensity": "extreme",  # Invalid: should be minimal/moderate/aggressive
+            "org": "demo",
+            "goal_style": "independent"
+        }
+        
+        response = self.client.post("/api/goals/generate", json=payload)
+        # Should reject with validation error
+        assert response.status_code in [400, 422]
+
+    def test_generate_rejects_invalid_goal_style_values(self):
+        """
+        Given: Generate request with invalid goal_style value
+        When: POST /api/goals/generate
+        Then: Returns 400 or 422 validation error
+        """
+        payload = {
+            "scale": "technical",
+            "level": "L30–35 (Career)",
+            "growth_intensity": "moderate",
+            "org": "demo",
+            "goal_style": "invalid_style"  # Invalid: should be independent/progressive
+        }
+        
+        response = self.client.post("/api/goals/generate", json=payload)
+        # Should reject with validation error
+        assert response.status_code in [400, 422]
+
 
 @pytest.mark.unit
 class TestAPIOrgFocusAreasEndpoint:
@@ -505,3 +541,169 @@ class TestAPIErrorHandling:
         # Should be sub-100ms (no file I/O)
         assert first_call_time < 0.1, \
             f"Metadata call took {first_call_time}s - may have unnecessary I/O"
+
+
+"""
+Test API endpoints, rate limiting, and HTTP behavior.
+
+Performance Efficiency: Rate limit expensive endpoints (10/min).
+Reliability: Validate error handling and graceful degradation.
+"""
+
+from fastapi.testclient import TestClient
+from api.main import app
+
+client = TestClient(app)
+
+
+@pytest.mark.unit
+class TestRateLimiting:
+    """
+    Test rate limiting behavior for expensive endpoints.
+    
+    Performance Efficiency: Rate limit expensive endpoints (e.g., 10/min).
+    """
+
+    def test_generate_prompts_rate_limit_enforced(self):
+        """
+        Test that /api/goals/generate enforces 10 requests/minute limit.
+        
+        Performance: Rate limit expensive endpoints (e.g., 10/min).
+        """
+        valid_payload = {
+            "scale": "technical",
+            "level": "L30–35 (Career)",
+            "growth_intensity": "moderate",
+            "org": "demo",
+            "goal_style": "independent",
+        }
+
+        # Make 10 requests (should all succeed)
+        for i in range(10):
+            response = client.post("/api/goals/generate", json=valid_payload)
+            assert response.status_code == 200, f"Request {i+1} failed unexpectedly"
+
+        # 11th request should be rate limited
+        response = client.post("/api/goals/generate", json=valid_payload)
+        assert response.status_code == 429, "Rate limit not enforced on 11th request"
+        
+        error_detail = response.json()["detail"]
+        assert "rate limit" in error_detail.lower() or "10 per 1 minute" in error_detail.lower()
+
+    def test_metadata_endpoint_not_aggressively_rate_limited(self):
+        """
+        Test that /api/metadata has reasonable rate limits (not as strict as generation).
+        
+        Performance: Metadata endpoints should allow more requests since they're cached.
+        """
+        # Make 15 requests (should all succeed - no 10/min limit here)
+        for i in range(15):
+            response = client.get("/api/metadata")
+            assert response.status_code == 200, f"Metadata request {i+1} was rate limited"
+
+    def test_rate_limit_error_format(self):
+        """
+        Test that rate limit errors return proper JSON format.
+        
+        Reliability: Clients should receive machine-readable error messages.
+        """
+        valid_payload = {
+            "scale": "technical",
+            "level": "L30–35 (Career)",
+            "growth_intensity": "moderate",
+            "org": "demo",
+            "goal_style": "independent",
+        }
+
+        # Exhaust rate limit
+        for _ in range(10):
+            client.post("/api/goals/generate", json=valid_payload)
+
+        # Verify rate limited response format
+        response = client.post("/api/goals/generate", json=valid_payload)
+        assert response.status_code == 429
+        
+        data = response.json()
+        assert "detail" in data, "Rate limit error should have 'detail' field"
+        assert isinstance(data["detail"], str), "Error detail should be a string"
+
+    def test_health_check_not_rate_limited(self):
+        """
+        Test that /api/health is not rate limited (needed for liveness probes).
+        
+        Reliability: Health checks must always succeed for Container Apps monitoring.
+        """
+        # Make 20 rapid health checks (should all succeed)
+        for i in range(20):
+            response = client.get("/api/health")
+            assert response.status_code == 200, f"Health check {i+1} was rate limited"
+            assert response.json()["status"] == "healthy"
+
+
+@pytest.mark.unit
+class TestCacheHeaders:
+    """
+    Test HTTP cache headers for metadata endpoints.
+    
+    Performance: Cache metadata responses (e.g., 1h); use HTTP cache headers.
+    """
+
+    def test_metadata_has_cache_headers(self):
+        """
+        Test that /api/metadata returns Cache-Control headers.
+        
+        Performance: Cache metadata responses (e.g., 1h).
+        """
+        response = client.get("/api/metadata")
+        assert response.status_code == 200
+        
+        # Check for Cache-Control header
+        cache_control = response.headers.get("cache-control")
+        assert cache_control is not None, "Missing Cache-Control header"
+        assert "max-age" in cache_control.lower(), "Cache-Control should specify max-age"
+        
+        # Verify cache duration (should be ~1 hour = 3600 seconds)
+        assert "3600" in cache_control or "1h" in cache_control.lower()
+
+    def test_focus_areas_has_cache_headers(self):
+        """
+        Test that /api/orgs/{org}/focus-areas returns cache headers.
+        
+        Performance: Focus areas change infrequently; cache for 1h.
+        """
+        response = client.get("/api/orgs/demo/focus-areas")
+        assert response.status_code == 200
+        
+        cache_control = response.headers.get("cache-control")
+        assert cache_control is not None, "Missing Cache-Control header"
+        assert "max-age" in cache_control.lower()
+
+    def test_generated_prompts_not_cached(self):
+        """
+        Test that /api/goals/generate does NOT cache responses.
+        
+        Performance: Dynamic content should not be cached.
+        """
+        from unittest.mock import patch
+        
+        # Mock both discover_scales (for validation) and assemble_prompt (for generation)
+        with patch('api.main.discover_scales') as mock_scales, \
+             patch('api.main.assemble_prompt') as mock_assemble:
+            mock_scales.return_value = ["technical", "leadership"]
+            mock_assemble.return_value = ("framework", "user_context")
+            
+            payload = {
+                "scale": "technical",
+                "level": "L30–35 (Career)",
+                "growth_intensity": "moderate",
+                "org": "demo",
+                "goal_style": "independent",
+            }
+            
+            response = client.post("/api/goals/generate", json=payload)
+            assert response.status_code == 200
+            
+            cache_control = response.headers.get("cache-control")
+            # Should either be absent or set to no-cache/no-store
+            if cache_control:
+                assert "no-cache" in cache_control.lower() or "no-store" in cache_control.lower()
