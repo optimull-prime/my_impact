@@ -172,4 +172,6 @@ OPENSPACE_*
 *_CHECKLIST.md
 *_QUICK_START*.md
 events/
-docs/events/
+docs/events/*.backup_*
+webapp/js/config.js.local
+.azure_config

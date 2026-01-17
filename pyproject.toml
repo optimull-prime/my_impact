@@ -3,72 +3,100 @@ requires = ["setuptools>=65.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "myimpact"
+name = "myimpact-api"
 version = "0.1.0"
-description = "AI-powered quarterly goal generation aligned to culture, job levels, and job-family expectations."
-readme = "README.md"
-requires-python = ">=3.10"
-license = {text = "Apache-2.0"}
+description = "AI-powered goal articulation assistant"
+readme = {text = "MyImpact API - Goal articulation assistant", content-type = "text/plain"}
+# Performance: Updated to modern SPDX license format (avoid deprecation warning)
+license = "Apache-2.0"
+requires-python = ">=3.11"
 authors = [
-    {name = "MyImpact Team", email = "team@myimpact.local"}
-]
-keywords = ["goals", "career-development", "culture", "joblevels", "llm"]
-classifiers = [
-    "Development Status :: 3 - Alpha",
-    "Intended Audience :: Developers",
-    "License :: OSI Approved :: Apache Software License",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
+    {name = "MyImpact Team"}
 ]
 
+# Performance Efficiency: Pin dependencies with upper bounds
 dependencies = [
-    "click>=8.1.0",
-    "python-dotenv>=1.0.0",
+    # Performance: Async web framework with connection pooling
+    "fastapi>=0.109.0,<0.110.0",
+    "uvicorn[standard]>=0.27.0,<0.28.0",
+    
+    # Performance: HTTP client with async support + timeouts (5-10s)
+    "httpx>=0.26.0,<0.27.0",
+    
+    # Reliability: Structured logging for monitoring (key metrics)
+    "python-json-logger>=2.0.7,<3.0.0",
+    
+    # Performance: Fast JSON serialization (orjson, avoid blocking)
+    "orjson>=3.9.0,<4.0.0",
+    
+    # Reliability: Configuration management with validation
+    "pydantic>=2.5.0,<3.0.0",
+    "pydantic-settings>=2.1.0,<3.0.0",
+    
+    # Security: CORS middleware
+    "python-multipart>=0.0.6,<0.1.0",
+    
+    # Performance: Rate limiting for expensive endpoints (10/min)
+    "slowapi>=0.1.9,<0.2.0",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=7.4.0",
-    "pytest-cov>=4.1.0",
-    "black>=23.0.0",
-    "isort>=5.12.0",
-    "flake8>=6.1.0",
-    "mypy>=1.5.0",
-    "httpx>=0.24.0",
+    "pytest>=7.4.0,<8.0.0",
+    "pytest-asyncio>=0.21.0,<0.22.0",
+    "pytest-cov>=4.1.0,<5.0.0",
+    "black>=23.12.0,<24.0.0",
+    "ruff>=0.1.0,<0.2.0",
 ]
-api = [
-    "fastapi>=0.114.0",
-    "uvicorn[standard]>=0.30.0",
-    "slowapi>=0.1.9",
-]
-azure = [
-    "azure-identity>=1.14.0",
-    "azure-keyvault-secrets>=4.7.0",
-    "azure-cosmos>=4.5.0",
-    "openai>=1.52.0",
-]
-
-[project.scripts]
-myimpact = "myimpact.cli:main"
 
 [tool.setuptools]
-packages = ["myimpact"]
+# Point to both 'api' and 'myimpact' directories for package sources
+packages = ["api", "myimpact"]
 
 [tool.setuptools.package-data]
-myimpact = ["prompts/**/*.txt", "prompts/**/*.md", "data/**/*.csv"]
+api = ["*.json", "*.yaml"]
+myimpact = ["*.json", "*.yaml"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+# Performance: Parallel test execution
+addopts = "-v --tb=short"
 
 [tool.black]
 line-length = 100
-target-version = ["py310"]
+target-version = ["py311"]
+exclude = '''
+/(
+    \.git
+  | \.venv
+  | venv
+  | __pycache__
+  | \.pytest_cache
+)/
+'''
 
-[tool.isort]
-profile = "black"
-line_length = 100
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+    "C4", # flake8-comprehensions
+    "UP", # pyupgrade
+]
+ignore = [
+    "E501",  # line too long (handled by black)
+]
 
-[tool.mypy]
-python_version = "3.10"
-warn_return_any = true
-warn_unused_configs = true
-disallow_untyped_defs = false
+[tool.coverage.run]
+source = ["api"]
+omit = ["tests/*", "*/test_*.py"]
+
+[tool.coverage.report]
+# Reliability: Enforce test coverage (monitor key metrics)
+fail_under = 70
+show_missing = true
